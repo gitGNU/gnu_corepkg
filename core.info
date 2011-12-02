@@ -1,0 +1,21 @@
+PKG=corepkg$
+NAME=corepkg$
+DESC=core package [.cpk] handler$
+
+MAJOR=1.2$
+MINOR=1$
+
+SRC_URL=http://kaptah.deevans.net/hacking$
+SRC_DATE=25 September 2011$
+
+BIN_URL=http://kaptah.deevans.net/hacking$
+BIN_DATE=25 September 2011$
+
+COMPILE=$
+DEPENDS=awk bash coreutils sed tar util-linux$
+RELATED=$
+
+INSTALL=$
+REMOVE=$
+
+NOTES=$

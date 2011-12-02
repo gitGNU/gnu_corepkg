@@ -1,0 +1,43 @@
+2011.09.25 D. E. Evans <sinuhe@gnu.org>
+
+* Improve create_pkg scalability, by using find, instead of touch,
+  as the initial command.
+* In install_pkg, a message should only be returned if the package is
+  already installed.  This is an oversight from the 09.12 change.
+* Remove packages safely.  If a file is shared by two or more packages,
+  do not remove that file.  Add a log of the package and files removed. 
+* Allow files and directories to be removed to have spaces.  This fixes
+  an outstanding bug in Devan's original corepkg.
+
+2011.09.13 D. E. Evans <sinuhe@gnu.org>
+
+* Add -u to corepkg.  This allows packages to be upgraded
+  in place.  No more boot-to-rescue nonsense.
+
+2011.09.12 D. E. Evans <sinuhe@gnu.org>
+
+* Errors should be sent to STDERR, not STDOUT.
+
+2011.09.10 D. E. Evans <sinuhe@gnu.org>
+
+* Don't rely on GNU tar specific options.
+
+2011.06.28 D. E. Evans <sinuhe@gnu.org>
+
+* Add GPLv2+ copyright notices.  Specifically, Josh Devan wanted
+  both the corepkg script and the man page to be under any GPL version
+  2 or better as preferred by the user, e.g. v2, v2+, v3, v3+. I felt that
+  GPLv2+ fit that bill best.
+
+2011.01.12 D. E. Evans <sinuhe@gnu.org>
+
+* Use /bin/bash, not /bin/sh.
+* Modify sed syntax for use with non-GNU sed.
+* Rebrand as sGOS.
+* Correct usage summary and follow more typical Unix man page style.
+  This includes similar improvements to the manual.
+* Make case statement more readable.
+* Use more instead of less. This avoids the user having to interact when
+  installing a package. This is especially useful when automating installs.
+* Rewrite the manual to more correctly reflect the syntax and to improve
+  readability.

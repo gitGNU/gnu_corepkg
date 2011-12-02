@@ -53,8 +53,6 @@ check_pkg() # [pkg] [dir]
 
 get_var() # [var] [core.info]
 {
-# Remove GNUism for portability.
-#	sed -ne '/^'$1'=/,${p;/\$/q}' "$2" | sed -e 's/^'$1'=//;s/\$//'
 	sed -ne '/^'$1'=/,${p
 		/\$/q
 		}' "$2" |\
@@ -106,7 +104,6 @@ install_pkg() # [file] [dir]
 		return 1
 	fi
 
-#	tar zxpf $1 -C $TMPDIR core.info
 	CUR=$(pwd)
 	if echo $1 | grep ^/ >/dev/null
 	then (cd $TMPDIR; tar xzf $1 core.info)
@@ -119,12 +116,11 @@ install_pkg() # [file] [dir]
 		return 1
 	fi
 
-	if check_pkg $PKG $DIR > /dev/null; then
-		echo "Package \"$PKG\" is already installed" 1>&2
+	if check_pkg $PKG $DIR >/dev/null 2>/dev/null
+		then echo "Package \"$PKG\" is already installed" 1>&2
 		return 1
 	fi
 
-#	tar zxpf $1 -C $DIR
 	if echo $1 | grep ^/ >/dev/null
 	then
 		(cd $DIR; tar xzpf $1)
@@ -139,21 +135,30 @@ install_pkg() # [file] [dir]
 
 remove_pkg() # [pkg] [dir]
 {
-	DIR=`choose_dir / $2`
-	if !(check_dir $DIR); then
-		return 1
+	DIR=$(choose_dir / $2)
+	if !(check_dir $DIR)
+	then return 1
 	fi
-
-	if !(check_pkg "$1" $DIR); then
-		return 1
+	if !(check_pkg "$1" $DIR)
+	then return 1
 	fi
+	sort -u $DIR/etc/core/*.list >/tmp/allpkgs.$$
+	sort -u $DIR/etc/core/$1.list >/tmp/$1.$$
+	comm -12 /tmp/allpkgs.$$ /tmp/$1.$$ >/tmp/rmfiles.$$
+	while read i
+	do
+		rm "$DIR/$i"
+		rmdir -p $(dirname "$DIR/$i") 2> /dev/null
+	done </tmp/rmfiles.$$
 
-	for i in `cat $DIR/etc/core/$1.list`; do
-		rm $DIR/$i
-		rmdir -p `dirname $DIR/$i` 2> /dev/null
-	done
-
+	if !(test -d $DIR/var/log/removed_pkgs)
+	then mkdir -m 755 $DIR/var/log/removed_pkgs
+	fi
 	mv $DIR/etc/core/$1.info $TMPDIR/core.info
+	version=$(get_var MAJOR $TMPDIR/core.info)
+	release=$(get_var MINOR $TMPDIR/core.info)
+	cat $TMPDIR/core.info $DIR/tmp/rmfiles.$$ \
+		>$DIR/var/log/removed_pkgs/$1-$version+$relase-$(date +%F)
 	rm $DIR/etc/core/$1.list
 
 	print_insrem $TMPDIR/core.info
@@ -165,14 +170,12 @@ query_pkg() # [file/pkg] [dir]
 		if !(check_file $1); then
 			return 1
 		fi
-#		tar zxpf $1 -C $TMPDIR core.info
 		CUR=$(pwd)
 		if echo $1 | grep ^/
 		then (cd $TMPDIR; tar xzf $1 core.info)
 		else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
 		fi
 		INFO=$TMPDIR/core.info
-#		tar zxpf $1 -C $TMPDIR core.list
 		CUR=$PWD
 		if echo $1 | grep ^/
 		then
@@ -300,9 +303,10 @@ create_pkg() # [dir]
 	CUR=`pwd`
 	cd $DIR
 
-	find -not -type d | sed -e '/core.info/d;/core.list/d' | sort > core.list
+	find -not -type d | sed -e '/core.info/d;/core.list/d' |\
+		sort > core.list
 
-	touch -d "`get_var BIN_DATE core.info`" `find`
+	find . -exec touch -d "$(get_var BIN_DATE core.info)" {} \;
 
 	FILE=`get_var PKG core.info`-`get_var MAJOR core.info`+`get_var MINOR core.info`
 	tar -cf $CUR/$FILE.tar *
@@ -316,7 +320,6 @@ extract_pkg() # [file] [dir]
 		return 1
 	fi
 
-#	tar zxpf $1 -C $TMPDIR core.info
 	CUR=$(pwd)
 	if echo $1 | grep ^/
 	then (cd $TMPDIR; tar xzf $1 core.info)
@@ -325,7 +328,6 @@ extract_pkg() # [file] [dir]
 	PKG=`get_var PKG $TMPDIR/core.info`
 	DIR=`choose_dir $PKG $2`
 	mkdir -p $DIR
-#	tar zxpf $1 -C $DIR
 	if echo $1 | grep ^/
 	then
 		(cd $DIR; tar xzpf $1)
@@ -334,29 +336,31 @@ extract_pkg() # [file] [dir]
 	fi
 }
 
-# This should allow a package of a different name to upgraded.
+# This does not allow a package of a different name to upgraded.
 upgrade_pkg() {
-	DIR=`choose_dir / $2`
+	DIR=$(choose_dir / $2)
 	if !(check_dir $DIR)
-	then
-		return 1
+	then return 1
 	fi
 	if !(check_file $1)
-	then
-		return 1
-	else
-		OPKG="$(echo $1 | cut -d'-' -f1)"
+	then return 1
+	else OPKG="$(echo $1 | cut -d'-' -f1)"
 	fi
 	sort -u /etc/core/$OPKG.list > /tmp/oldpkg.$$
 	extract_pkg $1 $DIR
-	PKG=`get_var PKG /core.info`
+	PKG=$(get_var PKG /core.info)
 	sort -u /core.list > /tmp/newpkg.$$
 	mv /core.info $DIR/etc/core/$PKG.info
 	mv /core.list $DIR/etc/core/$PKG.list
 	comm -23 /tmp/oldpkg.$$ /tmp/newpkg.$$ > /tmp/rmlist.$$
-	for i in $(paste -s /tmp/rmlist.$$)
-	do (cd / && rm $i)
-	done
+#	for i in $(paste -s /tmp/rmlist.$$)
+#	do (cd / && rm $i)
+#	done
+	while read i
+	do
+		rm "$DIR/$i"
+		rmdir -p $(dirname "$DIR/$i") 2> /dev/null
+	done </tmp/rmlist.$$
 }
 
 print_usage()

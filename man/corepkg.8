@@ -16,7 +16,7 @@
 .\" with this program; if not, write to the Free Software Foundation, Inc., 
 .\" 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-.TH corepkg 8 "13 September 2011" "CorePKG" "sGOS"
+.TH corepkg 8 "25 September 2011" "CorePKG" "sGOS"
 
 .SH NAME
 corepkg - Handle core packages [.cpk]
@@ -31,7 +31,6 @@ corepkg - Handle core packages [.cpk]
 .B corepkg [-q file|package] [dir]
 .br
 .B corepkg [-r pkg] [dir]
-
 
 .SH DESCRIPTION
 The CorePKG utility installs, removes, queries, and creates core packages.
@@ -58,7 +57,11 @@ Currently, this does not allow upgrading a package of a different name.
 corepkg -r pkg [dir]
 .sp 2
 Remove package [pkg] from the filesystem. [dir] defaults to "/". Any
-extra removal (and installation) instructions will be displayed.
+extra removal (and installation) instructions will be displayed.  There
+is no dependency checking.  If you remove critical libraries or
+binaries, your system may become inoperable.  A log will be placed in
+[dir]/var/log/removed_pkgs/pkg-$(date +%F) of the package, and files,
+removed.
 
 .SH QUERY
 corepkg -q file|pkg [dir]
@@ -84,12 +87,7 @@ Extract package [file] to a directory. [dir] defaults to the name of
 the package.
 
 .SH BUGS
-CorePKG does not currently have an in-place upgrade feature.  Do not
-remove packages from "/" that CorePKG depends on. If you remove critical
-libraries or binaries, your system may become inoperable. Use boot disks
-to upgrade critical packages.
-.sp 2
-CorePKG will not work properly with files or directories containing spaces.
+Hopefully, none.
 
 .SH EXAMPLES
 corepkg -i bash-2.05b+1.cpk /mnt/root

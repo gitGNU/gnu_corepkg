@@ -1,5 +1,7 @@
-#!/bin/sh
+#!/bin/bash
+# corepkg - The Core Linux Distro package manager.
 # Copyright 2003 Josh Devan <jd@eknitek.net>
+# Copyright 2011 D. E. Evans <sinuhe@gnu.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,14 +17,14 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# CorePKG version 1
+# Based on CorePKG version 1
 
 TMPDIR=/tmp/$RANDOM
 
 check_file() # [file]
 {
 	if !(test -f "$1"); then
-		echo "ERROR: File \"$1\" does not exist"
+		echo "File \"$1\" does not exist" 1>&2
 		return 1
 	fi
 
@@ -32,7 +34,7 @@ check_file() # [file]
 check_dir() # [dir]
 {
 	if !(test -d "$1"); then
-		echo "ERROR: Directory \"$1\" does not exist"
+		echo "Directory \"$1\" does not exist" 1>&2
 		return 1
 	fi
 
@@ -42,7 +44,7 @@ check_dir() # [dir]
 check_pkg() # [pkg] [dir]
 {
 	if !(test -f "$2/etc/core/$1.info"); then
-		echo "ERROR: Package \"$1\" is not installed"
+		echo "Package \"$1\" is not installed" 1>&2
 		return 1
 	fi
 
@@ -51,7 +53,12 @@ check_pkg() # [pkg] [dir]
 
 get_var() # [var] [core.info]
 {
-	sed -ne '/^'$1'=/,${p;/\$/q}' "$2" | sed -e 's/^'$1'=//;s/\$//'
+# Remove GNUism for portability.
+#	sed -ne '/^'$1'=/,${p;/\$/q}' "$2" | sed -e 's/^'$1'=//;s/\$//'
+	sed -ne '/^'$1'=/,${p
+		/\$/q
+		}' "$2" |\
+	sed -e 's/^'$1'=//;s/\$//'
 }
 
 choose_dir() # [default dir] [argument dir]
@@ -74,7 +81,7 @@ print_insrem() # [core.info]
 
 	MAN=$TMPDIR/man
 
-	echo '.TH "" "" "Core Linux Distribution" () "Core Linux Distribution"' > $MAN
+	echo '.TH "" "" "sGOS" () "sGOS"' > $MAN
 
 	echo .SH PACKAGE >> $MAN
 	echo `get_var PKG $1` `get_var MAJOR $1`+`get_var MINOR $1` >> $MAN
@@ -89,7 +96,8 @@ print_insrem() # [core.info]
 		echo "$REMOVE" >> $MAN
 	fi
 
-	nroff -mandoc $MAN 2> /dev/null | less -isR
+#	nroff -mandoc $MAN 2> /dev/null | less -isR
+	nroff -mandoc $MAN 2> /dev/null | more -sd
 }
 
 install_pkg() # [file] [dir]
@@ -98,7 +106,12 @@ install_pkg() # [file] [dir]
 		return 1
 	fi
 
-	tar -zxpf $1 -C $TMPDIR core.info
+#	tar zxpf $1 -C $TMPDIR core.info
+	CUR=$(pwd)
+	if echo $1 | grep ^/ >/dev/null
+	then (cd $TMPDIR; tar xzf $1 core.info)
+	else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
+	fi
 	PKG=`get_var PKG $TMPDIR/core.info`
 
 	DIR=`choose_dir / $2`
@@ -107,11 +120,17 @@ install_pkg() # [file] [dir]
 	fi
 
 	if check_pkg $PKG $DIR > /dev/null; then
-		echo "ERROR: Package \"$PKG\" is already installed"
+		echo "Package \"$PKG\" is already installed" 1>&2
 		return 1
 	fi
 
-	tar -zxpf $1 -C $DIR
+#	tar zxpf $1 -C $DIR
+	if echo $1 | grep ^/ >/dev/null
+	then
+		(cd $DIR; tar xzpf $1)
+	else
+		(cd $DIR; tar xzpf $CUR/$1)
+	fi
 	mv $DIR/core.info $DIR/etc/core/$PKG.info
 	mv $DIR/core.list $DIR/etc/core/$PKG.list
 
@@ -146,9 +165,21 @@ query_pkg() # [file/pkg] [dir]
 		if !(check_file $1); then
 			return 1
 		fi
-		tar -zxpf $1 -C $TMPDIR core.info
+#		tar zxpf $1 -C $TMPDIR core.info
+		CUR=$(pwd)
+		if echo $1 | grep ^/
+		then (cd $TMPDIR; tar xzf $1 core.info)
+		else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
+		fi
 		INFO=$TMPDIR/core.info
-		tar -zxpf $1 -C $TMPDIR core.list
+#		tar zxpf $1 -C $TMPDIR core.list
+		CUR=$PWD
+		if echo $1 | grep ^/
+		then
+			(cd $TMPDIR; tar xzpf $1 core.list)
+		else
+			(cd $TMPDIR; tar xzpf $CUR/$1 core.list)
+		fi
 		LIST=$TMPDIR/core.list
 	else
 		DIR=`choose_dir / $2`
@@ -164,7 +195,7 @@ query_pkg() # [file/pkg] [dir]
 
 	MAN=$TMPDIR/man
 
-	echo '.TH "" "" "Core Linux Distribution" () "Core Linux Distribution"' > $MAN
+	echo '.TH "" "" "sGOS" () "sGOS"' > $MAN
 
 	echo .SH NAME >> $MAN
 	get_var NAME $INFO >> $MAN
@@ -231,7 +262,8 @@ query_pkg() # [file/pkg] [dir]
 		echo .br >> $MAN
 	done
 
-	nroff -mandoc $MAN 2> /dev/null | less -isR
+#	nroff -mandoc $MAN 2> /dev/null | less -isR
+	nroff -mandoc $MAN 2> /dev/null | more -sd
 }
 
 list_pkg() # [dir]
@@ -284,21 +316,57 @@ extract_pkg() # [file] [dir]
 		return 1
 	fi
 
-	tar -zxpf $1 -C $TMPDIR core.info
+#	tar zxpf $1 -C $TMPDIR core.info
+	CUR=$(pwd)
+	if echo $1 | grep ^/
+	then (cd $TMPDIR; tar xzf $1 core.info)
+	else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
+	fi
 	PKG=`get_var PKG $TMPDIR/core.info`
 	DIR=`choose_dir $PKG $2`
 	mkdir -p $DIR
-	tar -zxpf $1 -C $DIR
+#	tar zxpf $1 -C $DIR
+	if echo $1 | grep ^/
+	then
+		(cd $DIR; tar xzpf $1)
+	else
+		(cd $DIR; tar xzpf $CUR/$1)
+	fi
+}
+
+# This should allow a package of a different name to upgraded.
+upgrade_pkg() {
+	DIR=`choose_dir / $2`
+	if !(check_dir $DIR)
+	then
+		return 1
+	fi
+	if !(check_file $1)
+	then
+		return 1
+	else
+		OPKG="$(echo $1 | cut -d'-' -f1)"
+	fi
+	sort -u /etc/core/$OPKG.list > /tmp/oldpkg.$$
+	extract_pkg $1 $DIR
+	PKG=`get_var PKG /core.info`
+	sort -u /core.list > /tmp/newpkg.$$
+	mv /core.info $DIR/etc/core/$PKG.info
+	mv /core.list $DIR/etc/core/$PKG.list
+	comm -23 /tmp/oldpkg.$$ /tmp/newpkg.$$ > /tmp/rmlist.$$
+	for i in $(paste -s /tmp/rmlist.$$)
+	do (cd / && rm $i)
+	done
 }
 
 print_usage()
 {
-	echo "Install: corepkg -i [file] [dir]"
-	echo "Remove:  corepkg -r [pkg] [dir]"
-	echo "Query:   corepkg -q [file/pkg] [dir]"
-	echo "List:    corepkg -l [dir]"
-	echo "Create:  corepkg -c [dir]"
-	echo "Extract: corepkg -x [file] [dir]"
+	echo "Usage:"
+	echo "corepkg [-c|-l dir]"
+	echo "corepkg [-i|-x file] [dir]"
+	echo "corepkg [-u file] [dir]"
+	echo "corepkg [-q file|pkg] [dir]"
+	echo "corepkg [-r pkg] [dir]"
 }
 
 main()
@@ -306,20 +374,14 @@ main()
 	mkdir $TMPDIR
 
 	case "$1" in
-		-i)
-			install_pkg $2 $3;;
-		-r)
-			remove_pkg $2 $3;;
-		-q)
-			query_pkg $2 $3;;
-		-l)
-			list_pkg $2 $3;;
-		-c)
-			create_pkg $2 $3;;
-		-x)
-			extract_pkg $2 $3;;
-		*)
-			print_usage;;
+		-c) create_pkg $2 $3;;
+		-i) install_pkg $2 $3;;
+		-l) list_pkg $2 $3;;
+		-q) query_pkg $2 $3;;
+		-r) remove_pkg $2 $3;;
+		-u) upgrade_pkg $2 $3;;
+		-x) extract_pkg $2 $3;;
+		*) print_usage;;
 	esac
 
 	rm -r $TMPDIR

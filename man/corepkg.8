@@ -1,4 +1,6 @@
+.\" corepkg - The Core Linux Distro package manager. 
 .\" Copyright 2003 Josh Devan <jd@eknitek.net> 
+.\" Copyright 2011 D. E. Evans <sinuhe@gnu.org>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify 
 .\" it under the terms of the GNU General Public License as published by 
@@ -14,81 +16,98 @@
 .\" with this program; if not, write to the Free Software Foundation, Inc., 
 .\" 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-.TH COREPKG 8 "" "CorePKG" "Core Linux Distribution"
+.TH corepkg 8 "13 September 2011" "CorePKG" "sGOS"
 
 .SH NAME
-corepkg - handle core packages [.cpk]
+corepkg - Handle core packages [.cpk]
 
 .SH SYNOPSIS
-.B corepkg
-[OPERATION] [ARGUMENTS]
+.B corepkg [-c|-l] [dir]
+.br
+.B corepkg [-i|-x file] [dir]
+.br
+.B corepkg [-u file] [dir]
+.br
+.B corepkg [-q file|package] [dir]
+.br
+.B corepkg [-r pkg] [dir]
+
 
 .SH DESCRIPTION
-CorePKG installs, removes, queries, lists, creates and extracts core
-packages [.cpk]. Arguments vary according to the operation being performed.
-Arguments will be of 3 types: file, package [pkg] or directory [dir]. All
-directory arguments are optional and will revert to defaults if not
-included. The six operations are explained below:
+The CorePKG utility installs, removes, queries, and creates core packages.
+It also lists installed packages and extracts the contents of a core
+pacakge.  A core package is a gzip compressed tape archive containing
+a core.info and core.list file in the root of the archive, and using
+.cpk as extension. Arguments are of three types: file (a .cpk package),
+package name (pkg), or directory (dir). All directory arguments are
+optional and will revert to defaults if not included.
 
 .SH INSTALL
-corepkg -i [file] [dir]
+corepkg -i file [dir]
 .sp 2
-Install package [file] to the filesystem at root [dir]. [dir] defaults
-to "/". Any extra install/remove instructions will be displayed.
+Install package file to the filesystem. [dir] defaults to "/". Any extra
+installation (and removal) instructions will be displayed.
+
+.SH UPGRADE
+corepkg -u file [dir]
+.sp 2
+Upgrade package with a new version. [dir defaults to "/".
+Currently, this does not allow upgrading a package of a different name.
 
 .SH REMOVE
-corepkg -r [pkg] [dir]
+corepkg -r pkg [dir]
 .sp 2
-Remove package [pkg] from the filesystem at root [dir]. [dir] defaults
-to "/". Any extra install/remove instructions will be displayed.
+Remove package [pkg] from the filesystem. [dir] defaults to "/". Any
+extra removal (and installation) instructions will be displayed.
 
 .SH QUERY
-corepkg -q [file]
-.br
-corepkg -q [pkg] [dir]
+corepkg -q file|pkg [dir]
 .sp 2
-Display information about package [file] or package [pkg] in the filesystem
-at root [dir]. [dir] defaults to "/".
+Display information about package from a package, from an installed
+package or package file. [dir] defaults to "/".
 
 .SH LIST
 corepkg -l [dir]
 .sp 2
-List all installed packages and their versions installed in the filesystem
-at root [dir]. [dir] defaults to "/".
+List all installed packages and their versions. [dir] defaults to "/".
 
 .SH CREATE
 corepkg -c [dir]
 .sp 2
-Create a package from directory [dir]. [dir] defaults to ".".
+Create a package from directory [dir]. [dir] defaults to the current
+working directory.
 
 .SH EXTRACT
 corepkg -x [file] [dir]
 .sp 2
-Extract package [file] to directory [dir]. [dir] defaults to the name of
+Extract package [file] to a directory. [dir] defaults to the name of
 the package.
 
-.SH WARNINGS
-Avoid removing packages from "/". If you remove critical libraries or
-binaries, your system will become inoperable. Use boot disks to upgrade
-critical packages.
+.SH BUGS
+CorePKG does not currently have an in-place upgrade feature.  Do not
+remove packages from "/" that CorePKG depends on. If you remove critical
+libraries or binaries, your system may become inoperable. Use boot disks
+to upgrade critical packages.
 .sp 2
 CorePKG will not work properly with files or directories containing spaces.
 
 .SH EXAMPLES
-corepkg -i core_bash-2.05b+1.cpk /mnt/root
+corepkg -i bash-2.05b+1.cpk /mnt/root
 .br
-corepkg -u core_bash /mnt/root
+corepkg -u bash /mnt/root
 .br
-corepkg -q core_bash-2.05b+1.cpk
+corepkg -q bash-2.05b+1.cpk
 .br
-corepkg -q core_bash /
+corepkg -q bash /
 .br
 corepkg -l /
 .br
-corepkg -c pkgs/core_bash
+corepkg -c sGOS/bash
 .br
-corepkg -x core_bash-2.05b+1.cpk pkgs/core_bash
+corepkg -x bash-2.05b+1.cpk pkgs/core_bash
 
-.SH NOTE
-This man page was written for the Core Linux Distribution
-[http://coredistro.sf.net/]. Feel free to use it elsewhere.
+.SH AUTHORS
+Josh Devan, author of the Core Linux Distribution [http://coredistro.sf.net/],
+now defunct, for which he wrote the original CorePKG.
+
+David Egan Evans, author of sGOS, based on Core.

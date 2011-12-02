@@ -1,0 +1,94 @@
+.\" Copyright 2003 Josh Devan <jd@eknitek.net> 
+.\" 
+.\" This program is free software; you can redistribute it and/or modify 
+.\" it under the terms of the GNU General Public License as published by 
+.\" the Free Software Foundation; either version 2 of the License, or 
+.\" (at your option) any later version. 
+.\" 
+.\" This program is distributed in the hope that it will be useful, 
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of 
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+.\" GNU General Public License for more details. 
+.\" 
+.\" You should have received a copy of the GNU General Public License along 
+.\" with this program; if not, write to the Free Software Foundation, Inc., 
+.\" 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+.TH COREPKG 8 "" "CorePKG" "Core Linux Distribution"
+
+.SH NAME
+corepkg - handle core packages [.cpk]
+
+.SH SYNOPSIS
+.B corepkg
+[OPERATION] [ARGUMENTS]
+
+.SH DESCRIPTION
+CorePKG installs, removes, queries, lists, creates and extracts core
+packages [.cpk]. Arguments vary according to the operation being performed.
+Arguments will be of 3 types: file, package [pkg] or directory [dir]. All
+directory arguments are optional and will revert to defaults if not
+included. The six operations are explained below:
+
+.SH INSTALL
+corepkg -i [file] [dir]
+.sp 2
+Install package [file] to the filesystem at root [dir]. [dir] defaults
+to "/". Any extra install/remove instructions will be displayed.
+
+.SH REMOVE
+corepkg -r [pkg] [dir]
+.sp 2
+Remove package [pkg] from the filesystem at root [dir]. [dir] defaults
+to "/". Any extra install/remove instructions will be displayed.
+
+.SH QUERY
+corepkg -q [file]
+.br
+corepkg -q [pkg] [dir]
+.sp 2
+Display information about package [file] or package [pkg] in the filesystem
+at root [dir]. [dir] defaults to "/".
+
+.SH LIST
+corepkg -l [dir]
+.sp 2
+List all installed packages and their versions installed in the filesystem
+at root [dir]. [dir] defaults to "/".
+
+.SH CREATE
+corepkg -c [dir]
+.sp 2
+Create a package from directory [dir]. [dir] defaults to ".".
+
+.SH EXTRACT
+corepkg -x [file] [dir]
+.sp 2
+Extract package [file] to directory [dir]. [dir] defaults to the name of
+the package.
+
+.SH WARNINGS
+Avoid removing packages from "/". If you remove critical libraries or
+binaries, your system will become inoperable. Use boot disks to upgrade
+critical packages.
+.sp 2
+CorePKG will not work properly with files or directories containing spaces.
+
+.SH EXAMPLES
+corepkg -i core_bash-2.05b+1.cpk /mnt/root
+.br
+corepkg -u core_bash /mnt/root
+.br
+corepkg -q core_bash-2.05b+1.cpk
+.br
+corepkg -q core_bash /
+.br
+corepkg -l /
+.br
+corepkg -c pkgs/core_bash
+.br
+corepkg -x core_bash-2.05b+1.cpk pkgs/core_bash
+
+.SH NOTE
+This man page was written for the Core Linux Distribution
+[http://coredistro.sf.net/]. Feel free to use it elsewhere.

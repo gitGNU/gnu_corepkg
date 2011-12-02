@@ -1,0 +1,328 @@
+#!/bin/sh
+# Copyright 2003 Josh Devan <jd@eknitek.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# CorePKG version 1
+
+TMPDIR=/tmp/$RANDOM
+
+check_file() # [file]
+{
+	if !(test -f "$1"); then
+		echo "ERROR: File \"$1\" does not exist"
+		return 1
+	fi
+
+	return 0
+}
+
+check_dir() # [dir]
+{
+	if !(test -d "$1"); then
+		echo "ERROR: Directory \"$1\" does not exist"
+		return 1
+	fi
+
+	return 0
+}
+
+check_pkg() # [pkg] [dir]
+{
+	if !(test -f "$2/etc/core/$1.info"); then
+		echo "ERROR: Package \"$1\" is not installed"
+		return 1
+	fi
+
+	return 0
+}
+
+get_var() # [var] [core.info]
+{
+	sed -ne '/^'$1'=/,${p;/\$/q}' "$2" | sed -e 's/^'$1'=//;s/\$//'
+}
+
+choose_dir() # [default dir] [argument dir]
+{
+	if test "$2"; then
+		echo $2
+	else
+		echo $1
+	fi
+}
+
+print_insrem() # [core.info]
+{
+	INSTALL=`get_var INSTALL $1`
+	REMOVE=`get_var REMOVE $1`
+
+	if !(test "$INSTALL" || test "$REMOVE"); then
+		return 0
+	fi
+
+	MAN=$TMPDIR/man
+
+	echo '.TH "" "" "Core Linux Distribution" () "Core Linux Distribution"' > $MAN
+
+	echo .SH PACKAGE >> $MAN
+	echo `get_var PKG $1` `get_var MAJOR $1`+`get_var MINOR $1` >> $MAN
+
+	if test "$INSTALL"; then
+		echo .SH INSTALL INSTRUCTIONS >> $MAN
+		echo "$INSTALL" >> $MAN
+	fi
+
+	if test "$REMOVE"; then
+		echo .SH REMOVE INSTRUCTIONS >> $MAN
+		echo "$REMOVE" >> $MAN
+	fi
+
+	nroff -mandoc $MAN 2> /dev/null | less -isR
+}
+
+install_pkg() # [file] [dir]
+{
+	if !(check_file $1); then
+		return 1
+	fi
+
+	tar -zxpf $1 -C $TMPDIR core.info
+	PKG=`get_var PKG $TMPDIR/core.info`
+
+	DIR=`choose_dir / $2`
+	if !(check_dir $DIR); then
+		return 1
+	fi
+
+	if check_pkg $PKG $DIR > /dev/null; then
+		echo "ERROR: Package \"$PKG\" is already installed"
+		return 1
+	fi
+
+	tar -zxpf $1 -C $DIR
+	mv $DIR/core.info $DIR/etc/core/$PKG.info
+	mv $DIR/core.list $DIR/etc/core/$PKG.list
+
+	print_insrem $DIR/etc/core/$PKG.info
+}
+
+remove_pkg() # [pkg] [dir]
+{
+	DIR=`choose_dir / $2`
+	if !(check_dir $DIR); then
+		return 1
+	fi
+
+	if !(check_pkg "$1" $DIR); then
+		return 1
+	fi
+
+	for i in `cat $DIR/etc/core/$1.list`; do
+		rm $DIR/$i
+		rmdir -p `dirname $DIR/$i` 2> /dev/null
+	done
+
+	mv $DIR/etc/core/$1.info $TMPDIR/core.info
+	rm $DIR/etc/core/$1.list
+
+	print_insrem $TMPDIR/core.info
+}
+
+query_pkg() # [file/pkg] [dir]
+{
+	if echo $1 | fgrep .cpk > /dev/null; then
+		if !(check_file $1); then
+			return 1
+		fi
+		tar -zxpf $1 -C $TMPDIR core.info
+		INFO=$TMPDIR/core.info
+		tar -zxpf $1 -C $TMPDIR core.list
+		LIST=$TMPDIR/core.list
+	else
+		DIR=`choose_dir / $2`
+		if !(check_dir $DIR); then
+			return 1
+		fi
+		if !(check_pkg "$1" $DIR); then
+			return 1
+		fi
+		INFO=$DIR/etc/core/$1.info
+		LIST=$DIR/etc/core/$1.list
+	fi
+
+	MAN=$TMPDIR/man
+
+	echo '.TH "" "" "Core Linux Distribution" () "Core Linux Distribution"' > $MAN
+
+	echo .SH NAME >> $MAN
+	get_var NAME $INFO >> $MAN
+
+	echo .SH PACKAGE >> $MAN
+	echo `get_var PKG $INFO` `get_var MAJOR $INFO`+`get_var MINOR $INFO` >> $MAN
+
+	echo .SH DESCRIPTION >> $MAN
+	get_var DESC $INFO >> $MAN
+
+	echo .SH SOURCE INFO >> $MAN
+	echo .B URL: >> $MAN
+	get_var SRC_URL $INFO >> $MAN
+	echo .br >> $MAN
+	echo .B Date: >> $MAN
+	get_var SRC_DATE $INFO >> $MAN
+
+	echo .SH BINARY INFO >> $MAN
+	echo .B URL: >> $MAN
+	get_var BIN_URL $INFO >> $MAN
+	echo .br >> $MAN
+	echo .B Date: >> $MAN
+	get_var BIN_DATE $INFO >> $MAN
+
+	COMPILE=`get_var COMPILE $INFO`
+	if test "$COMPILE"; then
+		echo .SH COMPILED WITH >> $MAN
+		echo "$COMPILE" >> $MAN
+	fi
+
+	DEPENDS=`get_var DEPENDS $INFO`
+	if test "$DEPENDS"; then
+		echo .SH DEPENDENCIES >> $MAN
+		echo "$DEPENDS" >> $MAN
+	fi
+
+	RELATED=`get_var RELATED $INFO`
+	if test "$RELATED"; then
+		echo .SH RELATED PACKAGES >> $MAN
+		echo "$RELATED" >> $MAN
+	fi
+
+	INSTALL=`get_var INSTALL $INFO`
+	if test "$INSTALL"; then
+		echo .SH INSTALL INSTRUCTIONS >> $MAN
+		echo "$INSTALL" >> $MAN
+	fi
+
+	REMOVE=`get_var REMOVE $INFO`
+	if test "$REMOVE"; then
+		echo .SH REMOVE INSTRUCTIONS >> $MAN
+		echo "$REMOVE" >> $MAN
+	fi
+
+	NOTES=`get_var NOTES $INFO`
+	if test "$NOTES"; then
+		echo .SH NOTES >> $MAN
+		echo "$NOTES" >> $MAN
+	fi
+
+	echo .SH CONTENTS >> $MAN
+	for i in `sed -e 's/^.//' $LIST`; do
+		echo $i >> $MAN
+		echo .br >> $MAN
+	done
+
+	nroff -mandoc $MAN 2> /dev/null | less -isR
+}
+
+list_pkg() # [dir]
+{
+	DIR=`choose_dir / $1`
+	if !(check_dir $DIR); then
+		return 1
+	fi
+
+	MAXLEN=1
+	for i in `ls $DIR/etc/core/*.info`; do
+		PKG=`get_var PKG $i`
+		LEN=`expr length $PKG`
+		if expr $LEN '>' $MAXLEN > /dev/null; then
+			MAXLEN=$LEN
+		fi
+	done
+
+	for i in `ls $DIR/etc/core/*.info`; do
+		PKG=`get_var PKG $i`
+		MAJOR=`get_var MAJOR $i`
+		MINOR=`get_var MINOR $i`
+		printf '%-'$MAXLEN's %s+%s\n' $PKG $MAJOR $MINOR
+	done
+}
+
+create_pkg() # [dir]
+{
+	DIR=`choose_dir . $1`
+	if !(check_dir $DIR); then
+		return 1
+	fi
+
+	CUR=`pwd`
+	cd $DIR
+
+	find -not -type d | sed -e '/core.info/d;/core.list/d' | sort > core.list
+
+	touch -d "`get_var BIN_DATE core.info`" `find`
+
+	FILE=`get_var PKG core.info`-`get_var MAJOR core.info`+`get_var MINOR core.info`
+	tar -cf $CUR/$FILE.tar *
+	gzip $CUR/$FILE.tar
+	mv $CUR/$FILE.tar.gz $CUR/$FILE.cpk
+}
+
+extract_pkg() # [file] [dir]
+{
+	if !(check_file $1); then
+		return 1
+	fi
+
+	tar -zxpf $1 -C $TMPDIR core.info
+	PKG=`get_var PKG $TMPDIR/core.info`
+	DIR=`choose_dir $PKG $2`
+	mkdir -p $DIR
+	tar -zxpf $1 -C $DIR
+}
+
+print_usage()
+{
+	echo "Install: corepkg -i [file] [dir]"
+	echo "Remove:  corepkg -r [pkg] [dir]"
+	echo "Query:   corepkg -q [file/pkg] [dir]"
+	echo "List:    corepkg -l [dir]"
+	echo "Create:  corepkg -c [dir]"
+	echo "Extract: corepkg -x [file] [dir]"
+}
+
+main()
+{
+	mkdir $TMPDIR
+
+	case "$1" in
+		-i)
+			install_pkg $2 $3;;
+		-r)
+			remove_pkg $2 $3;;
+		-q)
+			query_pkg $2 $3;;
+		-l)
+			list_pkg $2 $3;;
+		-c)
+			create_pkg $2 $3;;
+		-x)
+			extract_pkg $2 $3;;
+		*)
+			print_usage;;
+	esac
+
+	rm -r $TMPDIR
+}
+
+main $*

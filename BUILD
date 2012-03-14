@@ -16,7 +16,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 PKG=corepkg
-VERSION=1.2
+VERSION=1.2.1
 
 rm -rf $PKG-$VERSION
 tar xzvf $PKG-$VERSION.tar.gz

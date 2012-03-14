@@ -1,3 +1,9 @@
+2012.03.13 D. E. Evans <sinuhe@gnu.org>
+
+* Fix a bug with the upgrade and remove functions that broke
+  the trailing dir argument.
+* This is now corepkg-1.2.1.
+
 2011.12.2 D. E. Evans <sinuhe@gnu.org>
 
 * Add the core.info file from the sGOS corepkg-1.2 cpk file.

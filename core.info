@@ -12,7 +12,7 @@ BIN_URL=http://kaptah.deevans.net/hacking$
 BIN_DATE=13 March 2012$
 
 COMPILE=$
-DEPENDS=awk bash coreutils sed tar util-linux$
+DEPENDS=awk bash coreutils grep sed tar util-linux$
 RELATED=$
 
 INSTALL=$

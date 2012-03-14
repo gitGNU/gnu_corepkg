@@ -1,5 +1,5 @@
 # CorePKG build script for sGOS.
-# Copyright 2011 David Egan Evans, Magna UT 84044 USA
+# Copyright 2011, 2012 David Egan Evans, Magna UT 84044 USA
 #
 # Permission to use, copy, modify, and distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -16,7 +16,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 PKG=corepkg
-VERSION=1.2.1
+VERSION=1.3
 
 rm -rf $PKG-$VERSION
 tar xzvf $PKG-$VERSION.tar.gz

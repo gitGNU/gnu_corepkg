@@ -94,8 +94,7 @@ print_insrem() # [core.info]
 		echo "$REMOVE" >> $MAN
 	fi
 
-#	nroff -mandoc $MAN 2> /dev/null | less -isR
-	nroff -mandoc $MAN 2> /dev/null | more -sd
+	nroff -mandoc $MAN 2> /dev/null | more -sd # less -isR
 }
 
 install_pkg() # [file] [dir]
@@ -164,9 +163,9 @@ remove_pkg() # [pkg] [dir]
 	print_insrem $TMPDIR/core.info
 }
 
-query_pkg() # [file/pkg] [dir]
+query_pkg() # [file] | [pkg dir]
 {
-	if echo $1 | fgrep .cpk > /dev/null; then
+	if echo $1 | grep -F .cpk > /dev/null; then
 		if !(check_file $1); then
 			return 1
 		fi
@@ -176,14 +175,7 @@ query_pkg() # [file/pkg] [dir]
 		else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
 		fi
 		INFO=$TMPDIR/core.info
-		CUR=$PWD
-		if echo $1 | grep ^/
-		then
-			(cd $TMPDIR; tar xzpf $1 core.list)
-		else
-			(cd $TMPDIR; tar xzpf $CUR/$1 core.list)
-		fi
-		LIST=$TMPDIR/core.list
+	#	CUR=$PWD
 	else
 		DIR=`choose_dir / $2`
 		if !(check_dir $DIR); then
@@ -193,7 +185,6 @@ query_pkg() # [file/pkg] [dir]
 			return 1
 		fi
 		INFO=$DIR/etc/core/$1.info
-		LIST=$DIR/etc/core/$1.list
 	fi
 
 	MAN=$TMPDIR/man
@@ -259,14 +250,7 @@ query_pkg() # [file/pkg] [dir]
 		echo "$NOTES" >> $MAN
 	fi
 
-	echo .SH CONTENTS >> $MAN
-	for i in `sed -e 's/^.//' $LIST`; do
-		echo $i >> $MAN
-		echo .br >> $MAN
-	done
-
-#	nroff -mandoc $MAN 2> /dev/null | less -isR
-	nroff -mandoc $MAN 2> /dev/null | more -sd
+	nroff -mandoc $MAN 2> /dev/null | more -sd # less -isR
 }
 
 list_pkg() # [dir]
@@ -353,9 +337,6 @@ upgrade_pkg() {
 	mv $DIR/core.info $DIR/etc/core/$PKG.info
 	mv $DIR/core.list $DIR/etc/core/$PKG.list
 	comm -23 /tmp/oldpkg.$$ /tmp/newpkg.$$ > /tmp/rmlist.$$
-#	for i in $(paste -s /tmp/rmlist.$$)
-#	do (cd / && rm $i)
-#	done
 	while read i
 	do
 		rm "$DIR/$i"
@@ -363,13 +344,15 @@ upgrade_pkg() {
 	done </tmp/rmlist.$$
 }
 
-print_usage() {
+print_usage()
+{
 	echo "Usage:"
-	echo "	corepkg [-c|-l dir]"
-	echo "	corepkg [-i|-x file] [dir]"
-	echo "	corepkg [-u file] [dir]"
-	echo "	corepkg [-q file|pkg] [dir]"
-	echo "	corepkg [-r pkg] [dir]"
+	echo "corepkg -c|-l [dir]"
+	echo "corepkg -i|-x file [dir]"
+	echo "corepkg -u file [dir]"
+	echo "corepkg -q pkg [dir]"
+	echo "corepkg -q file"
+	echo "corepkg -r pkg [dir]"
 }
 
 main()

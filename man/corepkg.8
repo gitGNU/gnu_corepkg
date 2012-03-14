@@ -22,15 +22,19 @@
 corepkg - Handle core packages [.cpk]
 
 .SH SYNOPSIS
-.B corepkg [-c|-l] [dir]
+.B corepkg -c dir
 .br
-.B corepkg [-i|-x file] [dir]
+.B corepkg -i|-x file [dir]
 .br
-.B corepkg [-u file] [dir]
+.B corepkg -l [dir]
 .br
-.B corepkg [-q file|package] [dir]
+.B corepkg -u file [dir]
 .br
-.B corepkg [-r pkg] [dir]
+.B corepkg -q file [dir]
+.br
+.B corepkg -q file
+.br
+.B corepkg -r pkg [dir]
 
 .SH DESCRIPTION
 The CorePKG utility installs, removes, queries, and creates core packages.
@@ -64,10 +68,12 @@ binaries, your system may become inoperable.  A log will be placed in
 removed.
 
 .SH QUERY
-corepkg -q file|pkg [dir]
+corepkg -q pkg [dir]
+.br
+corepkg -q file
 .sp 2
-Display information about package from a package, from an installed
-package or package file. [dir] defaults to "/".
+Display information about a package from a package file, or from an
+installed package. [dir] defaults to "/".
 
 .SH LIST
 corepkg -l [dir]
@@ -81,7 +87,7 @@ Create a package from directory [dir]. [dir] defaults to the current
 working directory.
 
 .SH EXTRACT
-corepkg -x [file] [dir]
+corepkg -x file [dir]
 .sp 2
 Extract package [file] to a directory. [dir] defaults to the name of
 the package.

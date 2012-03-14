@@ -1,5 +1,12 @@
 2012.03.13 D. E. Evans <sinuhe@gnu.org>
 
+* Remove CONTENTS print from package query.
+
+  -q file listing is a botch. It's better not to risk using this
+  for something important by mistake.
+
+2012.03.13 D. E. Evans <sinuhe@gnu.org>
+
 * Fix a bug with the upgrade and remove functions that broke
   the trailing dir argument.
 * This is now corepkg-1.2.1.

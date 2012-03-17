@@ -1,5 +1,5 @@
 #!/bin/bash
-# corepkg - The Core Linux Distro package manager.
+# corepkg - The Core GNU/Linux Distro package manager.
 # Copyright 2003 Josh Devan <jd@eknitek.net>
 # Copyright 2011, 2012 D. E. Evans <sinuhe@gnu.org>
 #
@@ -21,9 +21,9 @@
 
 TMPDIR=/tmp/$RANDOM
 
-check_file() # [file]
-{
-	if !(test -f "$1"); then
+check_file() { # [file]
+	if !(test -f "$1")
+	then
 		echo "File \"$1\" does not exist" 1>&2
 		return 1
 	fi
@@ -31,9 +31,9 @@ check_file() # [file]
 	return 0
 }
 
-check_dir() # [dir]
-{
-	if !(test -d "$1"); then
+check_dir() { # [dir]
+	if !(test -d "$1")
+	then
 		echo "Directory \"$1\" does not exist" 1>&2
 		return 1
 	fi
@@ -41,9 +41,9 @@ check_dir() # [dir]
 	return 0
 }
 
-check_pkg() # [pkg] [dir]
-{
-	if !(test -f "$2/etc/core/$1.info"); then
+check_pkg() { # [pkg] [dir]
+	if !(test -f "$2/etc/core/$1.info")
+	then
 		echo "Package \"$1\" is not installed" 1>&2
 		return 1
 	fi
@@ -51,29 +51,28 @@ check_pkg() # [pkg] [dir]
 	return 0
 }
 
-get_var() # [var] [core.info]
-{
+get_var() { # [var] [core.info]
 	sed -ne '/^'$1'=/,${p
 		/\$/q
 		}' "$2" |\
 	sed -e 's/^'$1'=//;s/\$//'
 }
 
-choose_dir() # [default dir] [argument dir]
-{
-	if test "$2"; then
+choose_dir() { # [default dir] [argument dir]
+	if test "$2"
+	then
 		echo $2
 	else
 		echo $1
 	fi
 }
 
-print_insrem() # [core.info]
-{
+print_insrem() { # [core.info]
 	INSTALL=`get_var INSTALL $1`
 	REMOVE=`get_var REMOVE $1`
 
-	if !(test "$INSTALL" || test "$REMOVE"); then
+	if !(test "$INSTALL" || test "$REMOVE")
+	then
 		return 0
 	fi
 
@@ -84,12 +83,14 @@ print_insrem() # [core.info]
 	echo .SH PACKAGE >> $MAN
 	echo `get_var PKG $1` `get_var MAJOR $1`+`get_var MINOR $1` >> $MAN
 
-	if test "$INSTALL"; then
+	if test "$INSTALL"
+	then
 		echo .SH INSTALL INSTRUCTIONS >> $MAN
 		echo "$INSTALL" >> $MAN
 	fi
 
-	if test "$REMOVE"; then
+	if test "$REMOVE"
+	then
 		echo .SH REMOVE INSTRUCTIONS >> $MAN
 		echo "$REMOVE" >> $MAN
 	fi
@@ -97,26 +98,30 @@ print_insrem() # [core.info]
 	nroff -mandoc $MAN 2> /dev/null | more -sd # less -isR
 }
 
-install_pkg() # [file] [dir]
-{
-	if !(check_file $1); then
+install_pkg() { # [file] [dir]
+	if !(check_file $1)
+	then
 		return 1
 	fi
 
 	CUR=$(pwd)
 	if echo $1 | grep ^/ >/dev/null
-	then (cd $TMPDIR; tar xzf $1 core.info)
-	else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
+	then
+		(cd $TMPDIR; tar xzf $1 core.info)
+	else
+		(cd $TMPDIR; tar xzf $CUR/$1 core.info)
 	fi
 	PKG=`get_var PKG $TMPDIR/core.info`
 
 	DIR=`choose_dir / $2`
-	if !(check_dir $DIR); then
+	if !(check_dir $DIR)
+	then
 		return 1
 	fi
 
 	if check_pkg $PKG $DIR >/dev/null 2>/dev/null
-		then echo "Package \"$PKG\" is already installed" 1>&2
+	then
+		echo "Package \"$PKG\" is already installed" 1>&2
 		return 1
 	fi
 
@@ -132,15 +137,18 @@ install_pkg() # [file] [dir]
 	print_insrem $DIR/etc/core/$PKG.info
 }
 
-remove_pkg() # [pkg] [dir]
-{
+remove_pkg() { # [pkg] [dir]
 	DIR=$(choose_dir / $2)
 	if !(check_dir $DIR)
-	then return 1
+	then
+		return 1
 	fi
+
 	if !(check_pkg "$1" $DIR)
-	then return 1
+	then
+		return 1
 	fi
+
 	sort -u $DIR/etc/core/*.list >/tmp/allpkgs.$$
 	sort -u $DIR/etc/core/$1.list >/tmp/$1.$$
 	comm -12 /tmp/allpkgs.$$ /tmp/$1.$$ >/tmp/rmfiles.$$
@@ -151,8 +159,10 @@ remove_pkg() # [pkg] [dir]
 	done </tmp/rmfiles.$$
 
 	if !(test -d $DIR/var/log/removed_pkgs)
-	then mkdir -m 755 $DIR/var/log/removed_pkgs
+	then
+		mkdir -m 755 $DIR/var/log/removed_pkgs
 	fi
+
 	mv $DIR/etc/core/$1.info $TMPDIR/core.info
 	version=$(get_var MAJOR $TMPDIR/core.info)
 	release=$(get_var MINOR $TMPDIR/core.info)
@@ -163,27 +173,36 @@ remove_pkg() # [pkg] [dir]
 	print_insrem $TMPDIR/core.info
 }
 
-query_pkg() # [file] | [pkg dir]
-{
-	if echo $1 | grep -F .cpk > /dev/null; then
-		if !(check_file $1); then
+query_pkg() { # [file] | [pkg dir]
+	if echo $1 | grep -F .cpk > /dev/null
+	then
+		if !(check_file $1)
+		then
 			return 1
 		fi
+
 		CUR=$(pwd)
 		if echo $1 | grep ^/
-		then (cd $TMPDIR; tar xzf $1 core.info)
-		else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
+		then
+			(cd $TMPDIR; tar xzf $1 core.info)
+		else
+			(cd $TMPDIR; tar xzf $CUR/$1 core.info)
 		fi
+
 		INFO=$TMPDIR/core.info
 	#	CUR=$PWD
 	else
 		DIR=`choose_dir / $2`
-		if !(check_dir $DIR); then
+		if !(check_dir $DIR)
+		then
 			return 1
 		fi
-		if !(check_pkg "$1" $DIR); then
+
+		if !(check_pkg "$1" $DIR)
+		then
 			return 1
 		fi
+
 		INFO=$DIR/etc/core/$1.info
 	fi
 
@@ -215,37 +234,43 @@ query_pkg() # [file] | [pkg dir]
 	get_var BIN_DATE $INFO >> $MAN
 
 	COMPILE=`get_var COMPILE $INFO`
-	if test "$COMPILE"; then
+	if test "$COMPILE"
+	then
 		echo .SH COMPILED WITH >> $MAN
 		echo "$COMPILE" >> $MAN
 	fi
 
 	DEPENDS=`get_var DEPENDS $INFO`
-	if test "$DEPENDS"; then
+	if test "$DEPENDS"
+	then
 		echo .SH DEPENDENCIES >> $MAN
 		echo "$DEPENDS" >> $MAN
 	fi
 
 	RELATED=`get_var RELATED $INFO`
-	if test "$RELATED"; then
+	if test "$RELATED"
+	then
 		echo .SH RELATED PACKAGES >> $MAN
 		echo "$RELATED" >> $MAN
 	fi
 
 	INSTALL=`get_var INSTALL $INFO`
-	if test "$INSTALL"; then
+	if test "$INSTALL"
+	then
 		echo .SH INSTALL INSTRUCTIONS >> $MAN
 		echo "$INSTALL" >> $MAN
 	fi
 
 	REMOVE=`get_var REMOVE $INFO`
-	if test "$REMOVE"; then
+	if test "$REMOVE"
+	then
 		echo .SH REMOVE INSTRUCTIONS >> $MAN
 		echo "$REMOVE" >> $MAN
 	fi
 
 	NOTES=`get_var NOTES $INFO`
-	if test "$NOTES"; then
+	if test "$NOTES"
+	then
 		echo .SH NOTES >> $MAN
 		echo "$NOTES" >> $MAN
 	fi
@@ -253,23 +278,26 @@ query_pkg() # [file] | [pkg dir]
 	nroff -mandoc $MAN 2> /dev/null | more -sd # less -isR
 }
 
-list_pkg() # [dir]
-{
+list_pkg() { # [dir]
 	DIR=`choose_dir / $1`
-	if !(check_dir $DIR); then
+	if !(check_dir $DIR)
+	then
 		return 1
 	fi
 
 	MAXLEN=1
-	for i in `ls $DIR/etc/core/*.info`; do
+	for i in `ls $DIR/etc/core/*.info`
+	do
 		PKG=`get_var PKG $i`
 		LEN=`expr length $PKG`
-		if expr $LEN '>' $MAXLEN > /dev/null; then
+		if expr $LEN '>' $MAXLEN > /dev/null
+		then
 			MAXLEN=$LEN
 		fi
 	done
 
-	for i in `ls $DIR/etc/core/*.info`; do
+	for i in `ls $DIR/etc/core/*.info`
+	do
 		PKG=`get_var PKG $i`
 		MAJOR=`get_var MAJOR $i`
 		MINOR=`get_var MINOR $i`
@@ -277,10 +305,10 @@ list_pkg() # [dir]
 	done
 }
 
-create_pkg() # [dir]
-{
+create_pkg() { # [dir]
 	DIR=`choose_dir . $1`
-	if !(check_dir $DIR); then
+	if !(check_dir $DIR)
+	then
 		return 1
 	fi
 
@@ -298,16 +326,18 @@ create_pkg() # [dir]
 	mv $CUR/$FILE.tar.gz $CUR/$FILE.cpk
 }
 
-extract_pkg() # [file] [dir]
-{
-	if !(check_file $1); then
+extract_pkg() { # [file] [dir]
+	if !(check_file $1)
+	then
 		return 1
 	fi
 
 	CUR=$(pwd)
 	if echo $1 | grep ^/
-	then (cd $TMPDIR; tar xzf $1 core.info)
-	else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
+	then
+		(cd $TMPDIR; tar xzf $1 core.info)
+	else
+		(cd $TMPDIR; tar xzf $CUR/$1 core.info)
 	fi
 	PKG=`get_var PKG $TMPDIR/core.info`
 	DIR=`choose_dir $PKG $2`
@@ -324,11 +354,14 @@ extract_pkg() # [file] [dir]
 upgrade_pkg() {
 	DIR=$(choose_dir / $2)
 	if !(check_dir $DIR)
-	then return 1
+	then
+		return 1
 	fi
 	if !(check_file $1)
-	then return 1
-	else OPKG="$(echo $1 | cut -d'-' -f1)"
+	then
+		return 1
+	else
+		OPKG="$(echo $1 | cut -d'-' -f1)"
 	fi
 	sort -u $DIR/etc/core/$OPKG.list > /tmp/oldpkg.$$
 	extract_pkg $1 $DIR
@@ -344,8 +377,7 @@ upgrade_pkg() {
 	done </tmp/rmlist.$$
 }
 
-print_usage()
-{
+print_usage() {
 	echo "Usage:"
 	echo "corepkg -c|-l [dir]"
 	echo "corepkg -i|-x file [dir]"
@@ -355,8 +387,7 @@ print_usage()
 	echo "corepkg -r pkg [dir]"
 }
 
-main()
-{
+main() {
 	mkdir $TMPDIR
 
 	case "$1" in

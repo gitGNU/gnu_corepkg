@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # corepkg - The Core GNU/Linux Distro package manager.
 # Copyright 2003 Josh Devan <jd@eknitek.net>
 # Copyright 2011, 2012 D. E. Evans <sinuhe@gnu.org>
@@ -22,7 +22,7 @@
 TMPDIR=/tmp/$RANDOM
 
 check_file() { # [file]
-	if !(test -f "$1")
+	if ! (test -f "$1")
 	then
 		echo "File \"$1\" does not exist" 1>&2
 		return 1
@@ -32,7 +32,7 @@ check_file() { # [file]
 }
 
 check_dir() { # [dir]
-	if !(test -d "$1")
+	if ! (test -d "$1")
 	then
 		echo "Directory \"$1\" does not exist" 1>&2
 		return 1
@@ -42,7 +42,7 @@ check_dir() { # [dir]
 }
 
 check_pkg() { # [pkg] [dir]
-	if !(test -f "$2/etc/core/$1.info")
+	if ! (test -f "$2/etc/core/$1.info")
 	then
 		echo "Package \"$1\" is not installed" 1>&2
 		return 1
@@ -71,7 +71,7 @@ print_insrem() { # [core.info]
 	INSTALL=`get_var INSTALL $1`
 	REMOVE=`get_var REMOVE $1`
 
-	if !(test "$INSTALL" || test "$REMOVE")
+	if ! (test "$INSTALL" || test "$REMOVE")
 	then
 		return 0
 	fi
@@ -95,11 +95,11 @@ print_insrem() { # [core.info]
 		echo "$REMOVE" >> $MAN
 	fi
 
-	nroff -mandoc $MAN 2> /dev/null | more -sd # less -isR
+	nroff -mman $MAN 2> /dev/null | more -s
 }
 
 install_pkg() { # [file] [dir]
-	if !(check_file $1)
+	if ! (check_file $1)
 	then
 		return 1
 	fi
@@ -114,7 +114,7 @@ install_pkg() { # [file] [dir]
 	PKG=`get_var PKG $TMPDIR/core.info`
 
 	DIR=`choose_dir / $2`
-	if !(check_dir $DIR)
+	if ! (check_dir $DIR)
 	then
 		return 1
 	fi
@@ -139,12 +139,12 @@ install_pkg() { # [file] [dir]
 
 remove_pkg() { # [pkg] [dir]
 	DIR=$(choose_dir / $2)
-	if !(check_dir $DIR)
+	if ! (check_dir $DIR)
 	then
 		return 1
 	fi
 
-	if !(check_pkg "$1" $DIR)
+	if ! (check_pkg "$1" $DIR)
 	then
 		return 1
 	fi
@@ -158,7 +158,7 @@ remove_pkg() { # [pkg] [dir]
 		rmdir -p $(dirname "$DIR/$i") 2> /dev/null
 	done </tmp/rmfiles.$$
 
-	if !(test -d $DIR/var/log/removed_pkgs)
+	if ! (test -d $DIR/var/log/removed_pkgs)
 	then
 		mkdir -m 755 $DIR/var/log/removed_pkgs
 	fi
@@ -176,7 +176,7 @@ remove_pkg() { # [pkg] [dir]
 query_pkg() { # [file] | [pkg dir]
 	if echo $1 | grep -F .cpk > /dev/null
 	then
-		if !(check_file $1)
+		if ! (check_file $1)
 		then
 			return 1
 		fi
@@ -193,12 +193,12 @@ query_pkg() { # [file] | [pkg dir]
 	#	CUR=$PWD
 	else
 		DIR=`choose_dir / $2`
-		if !(check_dir $DIR)
+		if ! (check_dir $DIR)
 		then
 			return 1
 		fi
 
-		if !(check_pkg "$1" $DIR)
+		if ! (check_pkg "$1" $DIR)
 		then
 			return 1
 		fi
@@ -275,12 +275,12 @@ query_pkg() { # [file] | [pkg dir]
 		echo "$NOTES" >> $MAN
 	fi
 
-	nroff -mandoc $MAN 2> /dev/null | more -sd # less -isR
+	nroff -mman $MAN 2> /dev/null | more -s
 }
 
 list_pkg() { # [dir]
 	DIR=`choose_dir / $1`
-	if !(check_dir $DIR)
+	if ! (check_dir $DIR)
 	then
 		return 1
 	fi
@@ -307,7 +307,7 @@ list_pkg() { # [dir]
 
 create_pkg() { # [dir]
 	DIR=`choose_dir . $1`
-	if !(check_dir $DIR)
+	if ! (check_dir $DIR)
 	then
 		return 1
 	fi
@@ -315,7 +315,7 @@ create_pkg() { # [dir]
 	CUR=`pwd`
 	cd $DIR
 
-	find -not -type d | sed -e '/core.info/d;/core.list/d' |\
+	find ! -type d | sed -e '/core.info/d;/core.list/d' |\
 		sort > core.list
 
 	find . -exec touch -d "$(get_var BIN_DATE core.info)" {} \;
@@ -327,7 +327,7 @@ create_pkg() { # [dir]
 }
 
 extract_pkg() { # [file] [dir]
-	if !(check_file $1)
+	if ! (check_file $1)
 	then
 		return 1
 	fi
@@ -353,11 +353,11 @@ extract_pkg() { # [file] [dir]
 # This does not allow a package of a different name to upgraded.
 upgrade_pkg() {
 	DIR=$(choose_dir / $2)
-	if !(check_dir $DIR)
+	if ! (check_dir $DIR)
 	then
 		return 1
 	fi
-	if !(check_file $1)
+	if ! (check_file $1)
 	then
 		return 1
 	else

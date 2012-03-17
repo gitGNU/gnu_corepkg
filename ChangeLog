@@ -1,3 +1,7 @@
+2012.03.17 D. E. Evans <sinuhe@gnu.org>
+
+* Be POSIX compliant.
+
 2012.03.13 D. E. Evans <sinuhe@gnu.org>
 
 * Remove CONTENTS print from package query.

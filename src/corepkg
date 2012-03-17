@@ -107,9 +107,9 @@ install_pkg() { # [file] [dir]
 	CUR=$(pwd)
 	if echo $1 | grep ^/ >/dev/null
 	then
-		(cd $TMPDIR; tar xzf $1 core.info)
+		(cd $TMPDIR; tar -xzf $1 core.info)
 	else
-		(cd $TMPDIR; tar xzf $CUR/$1 core.info)
+		(cd $TMPDIR; tar -xzf $CUR/$1 core.info)
 	fi
 	PKG=`get_var PKG $TMPDIR/core.info`
 
@@ -127,9 +127,9 @@ install_pkg() { # [file] [dir]
 
 	if echo $1 | grep ^/ >/dev/null
 	then
-		(cd $DIR; tar xzpf $1)
+		(cd $DIR; tar -xzpf $1)
 	else
-		(cd $DIR; tar xzpf $CUR/$1)
+		(cd $DIR; tar -xzpf $CUR/$1)
 	fi
 	mv $DIR/core.info $DIR/etc/core/$PKG.info
 	mv $DIR/core.list $DIR/etc/core/$PKG.list
@@ -184,9 +184,9 @@ query_pkg() { # [file] | [pkg dir]
 		CUR=$(pwd)
 		if echo $1 | grep ^/
 		then
-			(cd $TMPDIR; tar xzf $1 core.info)
+			(cd $TMPDIR; tar -xzf $1 core.info)
 		else
-			(cd $TMPDIR; tar xzf $CUR/$1 core.info)
+			(cd $TMPDIR; tar -xzf $CUR/$1 core.info)
 		fi
 
 		INFO=$TMPDIR/core.info
@@ -335,18 +335,18 @@ extract_pkg() { # [file] [dir]
 	CUR=$(pwd)
 	if echo $1 | grep ^/
 	then
-		(cd $TMPDIR; tar xzf $1 core.info)
+		(cd $TMPDIR; tar -xzf $1 core.info)
 	else
-		(cd $TMPDIR; tar xzf $CUR/$1 core.info)
+		(cd $TMPDIR; tar -xzf $CUR/$1 core.info)
 	fi
 	PKG=`get_var PKG $TMPDIR/core.info`
 	DIR=`choose_dir $PKG $2`
 	mkdir -p $DIR
 	if echo $1 | grep ^/
 	then
-		(cd $DIR; tar xzpf $1)
+		(cd $DIR; tar -xzpf $1)
 	else
-		(cd $DIR; tar xzpf $CUR/$1)
+		(cd $DIR; tar -xzpf $CUR/$1)
 	fi
 }
 

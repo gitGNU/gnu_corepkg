@@ -78,7 +78,7 @@ print_insrem() { # [core.info]
 
 	MAN=$TMPDIR/man
 
-	echo '.TH "" "" "sGOS" () "sGOS"' > $MAN
+	echo '.TH "" "sGOS" "CorePKG" (sGOS) "CorePKG"' > $MAN
 
 	echo .SH PACKAGE >> $MAN
 	echo `get_var PKG $1` `get_var MAJOR $1`+`get_var MINOR $1` >> $MAN
@@ -208,7 +208,7 @@ query_pkg() { # [file] | [pkg dir]
 
 	MAN=$TMPDIR/man
 
-	echo '.TH "" "" "sGOS" () "sGOS"' > $MAN
+	echo '.TH "" "sGOS" "CorePKG" (sGOS) "CorePKG"' > $MAN
 
 	echo .SH NAME >> $MAN
 	get_var NAME $INFO >> $MAN

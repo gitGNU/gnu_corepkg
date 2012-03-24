@@ -16,13 +16,27 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 PKG=corepkg
-VERSION=1.3
+VERSION=1.3.1
+
+if test ! -w .
+then echo 'Cannot write to this directory!'
+fi
+
+if test -d /tmp/sGOS-$PKG/
+then
+	if test $(id -u) -ne 0
+	then
+		echo "Remove /tmp/sGOS-$PKG/ before continuing."
+		exit 1
+	else
+		rm -rf /tmp/sGOS-$PKG
+	fi
+fi
 
 rm -rf $PKG-$VERSION
 tar xzvf $PKG-$VERSION.tar.gz
 cd $PKG-$VERSION || exit 1
 
-rm -rf /tmp/sGOS-$PKG
 install -d /tmp/sGOS-$PKG/usr
 install -d /tmp/sGOS-$PKG/usr/man
 install -d /tmp/sGOS-$PKG/usr/man/man8
@@ -34,8 +48,15 @@ mkdir -p /tmp/sGOS-$PKG/usr/doc/$PKG
 cp -a COPYING ChangeLog README /tmp/sGOS-$PKG/usr/doc/$PKG
 
 cd ..
-chown -R root: /tmp/sGOS-$PKG/*
 cp core.info /tmp/sGOS-$PKG/
-chmod 0644 /tmp/sGOS-$PKG/core.info
-corepkg -c /tmp/sGOS-$PKG/
-rm -rf $PKG-$VERSION
+if test $(id -u) -ne 0
+then
+	chmod 0644 /tmp/sGOS-$PKG/core.info
+	echo "$PKG has been installed to /tmp/sGOS-$PKG/."
+else
+	chown -R root: /tmp/sGOS-$PKG/*
+	chmod -R u+w,go+r-w,a-s /tmp/sGOS-$PKG
+	chmod 0755 /tmp/sGOS-$PKG/*
+	corepkg -c /tmp/sGOS-$PKG/
+	rm -rf $PKG-$VERSION
+fi

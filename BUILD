@@ -38,14 +38,14 @@ tar xzvf $PKG-$VERSION.tar.gz
 cd $PKG-$VERSION || exit 1
 
 install -d /tmp/sGOS-$PKG/usr
+install -d /tmp/sGOS-$PKG/usr/doc
+install -d /tmp/sGOS-$PKG/usr/doc/$PKG
 install -d /tmp/sGOS-$PKG/usr/man
 install -d /tmp/sGOS-$PKG/usr/man/man8
-install man/corepkg.8 /tmp/sGOS-$PKG/usr/man/man8
 install -d /tmp/sGOS-$PKG/sbin
+install man/corepkg.8 /tmp/sGOS-$PKG/usr/man/man8
 install src/corepkg /tmp/sGOS-$PKG/sbin
-
-mkdir -p /tmp/sGOS-$PKG/usr/doc/$PKG
-cp -a COPYING ChangeLog README /tmp/sGOS-$PKG/usr/doc/$PKG
+install COPYING ChangeLog README /tmp/sGOS-$PKG/usr/doc/$PKG
 
 cd ..
 cp core.info /tmp/sGOS-$PKG/
@@ -53,6 +53,7 @@ if test $(id -u) -ne 0
 then
 	chmod 0644 /tmp/sGOS-$PKG/core.info
 	echo "$PKG has been installed to /tmp/sGOS-$PKG/."
+	rm -rf $PKG-$VERSION
 else
 	chown -R root: /tmp/sGOS-$PKG/*
 	chmod -R u+w,go+r-w,a-s /tmp/sGOS-$PKG

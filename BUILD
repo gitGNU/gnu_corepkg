@@ -16,7 +16,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 PKG=corepkg
-VERSION=1.3.1
+VERSION=1.3.2
 
 if test ! -w .
 then echo 'Cannot write to this directory!'

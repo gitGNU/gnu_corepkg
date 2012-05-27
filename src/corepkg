@@ -317,6 +317,7 @@ create_pkg() { # [dir]
 
 	find ! -type d | sed -e '/core.info/d;/core.list/d' |\
 		sort > core.list
+	chmod 644 core.list
 
 	find . -exec touch -d "$(get_var BIN_DATE core.info)" {} \;
 

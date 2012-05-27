@@ -26,32 +26,34 @@ if test -d /tmp/sGOS-$PKG/
 then
 	if test $(id -u) -ne 0
 	then
-		echo "Remove /tmp/sGOS-$PKG/ before continuing."
-		exit 1
+		echo "Remove /tmp/sGOS-$PKG/ before continuing." 1>&2
+		exit 2
 	else
 		rm -rf /tmp/sGOS-$PKG
 	fi
+fi
+
+if test ! -f core.info
+then
+	echo "The core.info file is not present." 1>&2
+	exit 3
 fi
 
 rm -rf $PKG-$VERSION
 tar xzvf $PKG-$VERSION.tar.gz
 cd $PKG-$VERSION || exit 1
 
-install -d /tmp/sGOS-$PKG/usr
-install -d /tmp/sGOS-$PKG/usr/doc
-install -d /tmp/sGOS-$PKG/usr/doc/$PKG
-install -d /tmp/sGOS-$PKG/usr/man
-install -d /tmp/sGOS-$PKG/usr/man/man8
-install -d /tmp/sGOS-$PKG/sbin
-install man/corepkg.8 /tmp/sGOS-$PKG/usr/man/man8
-install src/corepkg /tmp/sGOS-$PKG/sbin
-install COPYING ChangeLog README /tmp/sGOS-$PKG/usr/doc/$PKG
+mkdir -p /tmp/sGOS-$PKG/usr/doc/$PKG
+mkdir -p /tmp/sGOS-$PKG/usr/man/man8
+mkdir /tmp/sGOS-$PKG/sbin
+cp man/corepkg.8 /tmp/sGOS-$PKG/usr/man/man8/
+cp src/corepkg /tmp/sGOS-$PKG/sbin/
+cp COPYING ChangeLog README /tmp/sGOS-$PKG/usr/doc/$PKG
 
 cd ..
-cp core.info /tmp/sGOS-$PKG/
+cp core.info /tmp/sGOS-$PKG/ && chmod 0644 /tmp/sGOS-$PKG/core.info
 if test $(id -u) -ne 0
 then
-	chmod 0644 /tmp/sGOS-$PKG/core.info
 	echo "$PKG has been installed to /tmp/sGOS-$PKG/."
 	rm -rf $PKG-$VERSION
 else

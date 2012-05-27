@@ -9,7 +9,7 @@
 .\" 
 .\" This program is distributed in the hope that it will be useful, 
 .\" but WITHOUT ANY WARRANTY; without even the implied warranty of 
-.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
 .\" GNU General Public License for more details. 
 .\" 
 .\" You should have received a copy of the GNU General Public License along 
@@ -39,7 +39,7 @@ corepkg - Handle core packages [.cpk]
 .SH DESCRIPTION
 The CorePKG utility installs, removes, queries, and creates core packages.
 It also lists installed packages and extracts the contents of a core
-pacakge.  A core package is a gzip compressed tape archive containing
+pacakge. A core package is a gzip compressed tape archive containing
 a core.info and core.list file in the root of the archive, and using
 .cpk as extension. Arguments are of three types: file (a .cpk package),
 package name (pkg), or directory (dir). All directory arguments are
@@ -61,9 +61,9 @@ Currently, this does not allow upgrading a package of a different name.
 corepkg -r pkg [dir]
 .sp 2
 Remove package [pkg] from the filesystem. [dir] defaults to "/". Any
-extra removal (and installation) instructions will be displayed.  There
-is no dependency checking.  If you remove critical libraries or
-binaries, your system may become inoperable.  A log will be placed in
+extra removal (and installation) instructions will be displayed. There
+is no dependency checking. If you remove critical libraries or
+binaries, your system may become inoperable. A log will be placed in
 [dir]/var/log/removed_pkgs/pkg-$(date +%F) of the package, and files,
 removed.
 

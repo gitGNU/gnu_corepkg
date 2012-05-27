@@ -60,6 +60,7 @@ else
 	chown -R root: /tmp/sGOS-$PKG/*
 	chmod -R u+w,go+r-w,a-s /tmp/sGOS-$PKG
 	chmod 0755 /tmp/sGOS-$PKG/*
+	chmod 0644 /tmp/sGOS-$PKG/core.info
 	corepkg -c /tmp/sGOS-$PKG/
 	rm -rf $PKG-$VERSION
 fi

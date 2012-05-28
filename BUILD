@@ -43,11 +43,15 @@ rm -rf $PKG-$VERSION
 tar xzvf $PKG-$VERSION.tar.gz
 cd $PKG-$VERSION || exit 1
 
-mkdir -m 755 -p /tmp/sGOS-$PKG/usr/doc/$PKG
-mkdir -m 755 -p /tmp/sGOS-$PKG/usr/man/man8
+mkdir -m 755 /tmp/sGOS-$PKG
+mkdir -m 755 /tmp/sGOS-$PKG/usr
+mkdir -m 755 /tmp/sGOS-$PKG/usr/doc
+mkdir -m 755 /tmp/sGOS-$PKG/usr/doc/$PKG
+mkdir -m 755 /tmp/sGOS-$PKG/usr/man
+mkdir -m 755 /tmp/sGOS-$PKG/usr/man/man8
 mkdir -m 755 /tmp/sGOS-$PKG/sbin
 cp man/corepkg.8 /tmp/sGOS-$PKG/usr/man/man8/
-cp src/corepkg /tmp/sGOS-$PKG/sbin/
+cp src/corepkg /tmp/sGOS-$PKG/sbin/ && chmod a+x /tmp/sGOS-$PKG/sbin/*
 cp COPYING ChangeLog README /tmp/sGOS-$PKG/usr/doc/$PKG
 
 cd ..

@@ -16,7 +16,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 PKG=corepkg
-VERSION=1.3.2
+VERSION=1.3.2.1
 
 if test ! -w .
 then echo 'Cannot write to this directory!'
@@ -43,9 +43,9 @@ rm -rf $PKG-$VERSION
 tar xzvf $PKG-$VERSION.tar.gz
 cd $PKG-$VERSION || exit 1
 
-mkdir -p /tmp/sGOS-$PKG/usr/doc/$PKG
-mkdir -p /tmp/sGOS-$PKG/usr/man/man8
-mkdir /tmp/sGOS-$PKG/sbin
+mkdir -m 755 -p /tmp/sGOS-$PKG/usr/doc/$PKG
+mkdir -m 755 -p /tmp/sGOS-$PKG/usr/man/man8
+mkdir -m 755 /tmp/sGOS-$PKG/sbin
 cp man/corepkg.8 /tmp/sGOS-$PKG/usr/man/man8/
 cp src/corepkg /tmp/sGOS-$PKG/sbin/
 cp COPYING ChangeLog README /tmp/sGOS-$PKG/usr/doc/$PKG
@@ -59,7 +59,6 @@ then
 else
 	chown -R root: /tmp/sGOS-$PKG/*
 	chmod -R u+w,go+r-w,a-s /tmp/sGOS-$PKG
-	chmod 0755 /tmp/sGOS-$PKG/*
 	chmod 0644 /tmp/sGOS-$PKG/core.info
 	corepkg -c /tmp/sGOS-$PKG/
 	rm -rf $PKG-$VERSION

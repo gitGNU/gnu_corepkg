@@ -19,7 +19,9 @@ PKG=corepkg
 VERSION=1.3.2.1
 
 if test ! -w .
-then echo 'Cannot write to this directory!' 1>&2 || exit 1
+then
+	echo 'Cannot write to this directory!' 1>&2
+	exit 1
 fi
 
 if test -d /tmp/sGOS-$PKG/

@@ -19,18 +19,11 @@ PKG=corepkg
 VERSION=1.3.2.1
 
 if test ! -w .
-then echo 'Cannot write to this directory!'
+then echo 'Cannot write to this directory!' 1>&2 || exit 1
 fi
 
 if test -d /tmp/sGOS-$PKG/
-then
-	if test $(id -u) -ne 0
-	then
-		echo "Remove /tmp/sGOS-$PKG/ before continuing." 1>&2
-		exit 2
-	else
-		rm -rf /tmp/sGOS-$PKG
-	fi
+then rm -rf /tmp/sGOS-$PKG || exit 2
 fi
 
 if test ! -f core.info
@@ -52,15 +45,14 @@ cp COPYING ChangeLog README /tmp/sGOS-$PKG/usr/doc/$PKG
 
 cd ..
 cp core.info /tmp/sGOS-$PKG/ && chmod 0644 /tmp/sGOS-$PKG/core.info
+chmod -R u+rw,go+r-w,ug-s /tmp/sGOS-$PKG
+find /tmp/sGOS-$PKG -type d -exec chmod ugo+x "{}" \;
 if test $(id -u) -ne 0
 then
 	echo "$PKG has been installed to /tmp/sGOS-$PKG/."
-	rm -rf $PKG-$VERSION
+	echo "It may be necessary to chown -R before packaging."
 else
-	chown -R root: /tmp/sGOS-$PKG/*
-	chmod -R u+rw,go+r-w,ug-s /tmp/sGOS-$PKG
-	find /tmp/sGOS-$PKG -type d -exec chmod ugo+x "{}" \;
-	chmod 0644 /tmp/sGOS-$PKG/core.info
+	chown -R root: /tmp/sGOS-$PKG/
 	corepkg -c /tmp/sGOS-$PKG/
-	rm -rf $PKG-$VERSION
 fi
+rm -rf $PKG-$VERSION

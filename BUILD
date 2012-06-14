@@ -40,9 +40,9 @@ cd $PKG-$VERSION || exit 1
 
 mkdir -m 755 /tmp/sGOS-$PKG/usr/doc/$PKG
 mkdir -m 755 /tmp/sGOS-$PKG/usr/man/man8
-mkdir -m 755 /tmp/sGOS-$PKG/sbin
+mkdir -m 755 /tmp/sGOS-$PKG/bin
 cp man/corepkg.8 /tmp/sGOS-$PKG/usr/man/man8/
-cp src/corepkg /tmp/sGOS-$PKG/sbin/ && chmod a+x /tmp/sGOS-$PKG/sbin/*
+cp src/corepkg /tmp/sGOS-$PKG/bin/ && chmod a+x /tmp/sGOS-$PKG/bin/*
 cp COPYING ChangeLog README /tmp/sGOS-$PKG/usr/doc/$PKG
 
 cd ..

@@ -1,3 +1,28 @@
+2012.06.22 D. E. Evans <sinuhe@gnu.org>
+
+* 1.4 release.
+
+2012.06.21 D. E. Evans <sinuhe@gnu.org>
+
+* Fix PKG name bug in upgrade function.
+
+2012.06.14 D. E. Evans <sinuhe@gnu.org>
+
+* Update core.info file to point to Savannah as SRC_URL.
+* Install to /bin, not /sbin.
+
+2012.06.08 D. E. Evans <sinuhe@gnu.org>
+
+* Redirect error to STDERR and exit in BUILD script.
+* Simplify /tmp/sGOS-$PKG prep logic.
+* Move chmod operation outside root user block, i.e. make sure as much
+  of the script as possible runs as an unprivileged user.
+
+2012.06.07 D. E. Evans <sinuhe@gnu.org>
+
+* Make sure directories in BUILD script have x-bit (i.e. compensate
+  for varying umask)
+
 2012.05.27 D. E. Evans <sinuhe@gnu.org>
 
 * Update for 1.3.2.1

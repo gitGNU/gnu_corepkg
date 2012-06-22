@@ -16,7 +16,7 @@
 .\" with this program; if not, write to the Free Software Foundation, Inc., 
 .\" 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-.TH corepkg 8 "27 May 2012" "CorePKG" "sGOS"
+.TH corepkg 8 "22 June 2012" "CorePKG" "sGOS"
 
 .SH NAME
 corepkg - Handle core packages [.cpk]
@@ -98,6 +98,11 @@ corepkg -r|-u will clobber packaged configuration files.
 Configuration files must be added by the installer, or system
 adminstrator, not a package (examples should be found in /usr/doc).
 Static configuration files should, of course, be installed in /usr/lib.
+
+corepkg -u does not upgrade or replace packages with a different name.
+
+Dynamically shared library dependencies are not tracked (other than the
+arbitrary DEPENDS in core.info). Should they be?
 
 .SH EXAMPLES
 corepkg -i bash-2.05b+1.cpk /mnt/root

@@ -16,7 +16,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 PKG=corepkg
-VERSION=1.3.2.1
+VERSION=1.4
 
 if test ! -w .
 then

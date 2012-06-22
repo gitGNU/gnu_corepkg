@@ -340,12 +340,11 @@ upgrade_pkg() {
 
 	if ! (check_file $1)
 	then return 1
-	else OPKG="$(echo $1 | cut -d'-' -f1)"
 	fi
 
-	sort -u $DIR/etc/core/$OPKG.list > /tmp/oldpkg.$$
 	extract_pkg $1 $DIR
 	PKG=$(get_var PKG $DIR/core.info)
+	sort -u $DIR/etc/core/$PKG.list > /tmp/oldpkg.$$
 	sort -u $DIR/core.list > /tmp/newpkg.$$
 	mv $DIR/core.info $DIR/etc/core/$PKG.info
 	mv $DIR/core.list $DIR/etc/core/$PKG.list

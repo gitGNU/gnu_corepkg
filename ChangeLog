@@ -1,6 +1,7 @@
 2012.06.22 D. E. Evans <sinuhe@gnu.org>
 
 * 1.4 release.
+* Fix a bug in BUILD script mkdir.
 
 2012.06.21 D. E. Evans <sinuhe@gnu.org>
 

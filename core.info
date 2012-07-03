@@ -15,7 +15,7 @@ COMPILE=$
 DEPENDS=awk sh grep nroff sed tar$
 RELATED=$
 
-INSTALL=$
-REMOVE=$
+INSTALL=mkdir -m755 /etc/core$
+REMOVE=rmdir /etc/core$
 
 NOTES=$

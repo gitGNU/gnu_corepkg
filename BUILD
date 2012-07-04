@@ -43,7 +43,7 @@ mkdir -pm755 /tmp/sGOS-$PKG/usr/man/man8
 mkdir -pm755 /tmp/sGOS-$PKG/bin
 cp man/corepkg.8 /tmp/sGOS-$PKG/usr/man/man8/
 cp src/corepkg /tmp/sGOS-$PKG/bin/ && chmod a+x /tmp/sGOS-$PKG/bin/*
-cp COPYING ChangeLog README /tmp/sGOS-$PKG/usr/doc/$PKG
+cp COPYING /tmp/sGOS-$PKG/usr/doc/$PKG
 
 cd ..
 cp core.info /tmp/sGOS-$PKG/ && chmod 0644 /tmp/sGOS-$PKG/core.info

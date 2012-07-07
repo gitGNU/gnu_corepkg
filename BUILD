@@ -38,12 +38,12 @@ rm -rf $PKG-$VERSION
 tar xzvf $PKG-$VERSION.tar.gz
 cd $PKG-$VERSION || exit 1
 
-mkdir -pm755 /tmp/sGOS-$PKG/usr/doc/$PKG
-mkdir -pm755 /tmp/sGOS-$PKG/usr/man/man8
 mkdir -pm755 /tmp/sGOS-$PKG/bin
+mkdir -pm755 /tmp/sGOS-$PKG/usr/man/man8
+mkdir -pm755 /tmp/sGOS-$PKG/usr/share/$PKG
 cp man/corepkg.8 /tmp/sGOS-$PKG/usr/man/man8/
 cp src/corepkg /tmp/sGOS-$PKG/bin/ && chmod a+x /tmp/sGOS-$PKG/bin/*
-cp COPYING /tmp/sGOS-$PKG/usr/doc/$PKG
+cp COPYING /tmp/sGOS-$PKG/usr/share/$PKG
 
 cd ..
 cp core.info /tmp/sGOS-$PKG/ && chmod 0644 /tmp/sGOS-$PKG/core.info

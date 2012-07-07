@@ -1,7 +1,13 @@
+2012.07.07 D. E. Evans <sinuhe@gnu.org>
+
+* Use /usr/share instead of /usr/doc in BUILD script. COPYING is kept
+  because of Josh Devan's requirement that the original corepkg be
+  under the GPL. The GPL requires that the GPL license be included.
+
 2012.07.03 D. E. Evans <sinuhe@gnu.org>
 
 * Update core.info with installation instructions for making /etc/core/.
-* Remove ChangeLog and README from doc directory.
+* Remove ChangeLog and README from doc directory in BUILD script.
 
 2012.06.22 D. E. Evans <sinuhe@gnu.org>
 

@@ -310,7 +310,7 @@ extract_pkg() { # [file] [dir]
 	fi
 }
 
-# This does not allow a package of a different name to upgraded.
+# This does not allow a package of a different name to be upgraded.
 upgrade_pkg() {
 	DIR=$(choose_dir / $2)
 	if ! (check_dir $DIR)

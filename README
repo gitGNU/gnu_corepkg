@@ -1,6 +1,4 @@
 The is sinuhe's release of CorePKG.
 
-The ChangeLog documents changes since the Core Distro release in 2003.
-
 A core.info file is not a GNU Emacs info document, but a configuration
-file for CorePKG.
+template file for CorePKG.

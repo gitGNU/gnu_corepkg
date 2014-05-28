@@ -8,7 +8,7 @@ MINOR=1$
 SRC_URL=http://download.savannah.gnu.org/releases/corepkg/$
 SRC_DATE=22 June 2012$
 
-BIN_URL=http://kaptah.deevans.net/hacking$
+BIN_URL=http://oberon07.com/hacking$
 BIN_DATE=22 June 2012$
 
 COMPILE=$

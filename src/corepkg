@@ -1,7 +1,7 @@
 #!/bin/sh
 # corepkg - The Core GNU/Linux Distro package manager.
 # Copyright 2003 Josh Devan <jd@eknitek.net>
-# Copyright 2011, 2012, 2014 D. E. Evans <sinuhe@gnu.org>
+# Copyright 2011-2012, 2014-2015 D. E. Evans <sinuhe@gnu.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -93,9 +93,9 @@ install_pkg() { # [file] [dir]
 	fi
 
 	CUR=$(pwd)
-	if echo $1 | grep ^/ >/dev/null
-	then (cd $TMPDIR; tar -xzf $1 core.info)
-	else (cd $TMPDIR; tar -xzf $CUR/$1 core.info)
+	if echo $1 | grep -q ^/
+	then (cd $TMPDIR; tar xzf $1 core.info)
+	else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
 	fi
 
 	PKG=`get_var PKG $TMPDIR/core.info`
@@ -109,9 +109,9 @@ install_pkg() { # [file] [dir]
 	then echo "Package \"$PKG\" is already installed" 1>&2; return 1
 	fi
 
-	if echo $1 | grep ^/ >/dev/null
-	then (cd $DIR; tar -xzpf $1)
-	else (cd $DIR; tar -xzpf $CUR/$1)
+	if echo $1 | grep -q ^/
+	then (cd $DIR; tar xzpf $1)
+	else (cd $DIR; tar xzpf $CUR/$1)
 	fi
 
 	mv $DIR/core.info $DIR/etc/core/$PKG.info
@@ -154,16 +154,16 @@ remove_pkg() { # [pkg] [dir]
 }
 
 query_pkg() { # [file] | [pkg dir]
-	if echo $1 | grep -F .cpk > /dev/null
+	if echo $1 | grep -qF .cpk
 	then
 		if ! (check_file $1)
 		then return 1
 		fi
 
 		CUR=$(pwd)
-		if echo $1 | grep ^/
-		then (cd $TMPDIR; tar -xzf $1 core.info)
-		else (cd $TMPDIR; tar -xzf $CUR/$1 core.info)
+		if echo $1 | grep -q ^/
+		then (cd $TMPDIR; tar xzf $1 core.info)
+		else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
 		fi
 
 		INFO=$TMPDIR/core.info
@@ -284,7 +284,7 @@ create_pkg() { # [dir]
 	find . -exec touch -d "$(get_var BIN_DATE core.info)" {} \;
 
 	FILE=`get_var PKG core.info`-`get_var MAJOR core.info`+`get_var MINOR core.info`
-	tar -cf $CUR/$FILE.tar *
+	tar cf $CUR/$FILE.tar *
 	gzip $CUR/$FILE.tar
 	mv $CUR/$FILE.tar.gz $CUR/$FILE.cpk
 }
@@ -296,17 +296,17 @@ extract_pkg() { # [file] [dir]
 
 	CUR=$(pwd)
 
-	if echo $1 | grep ^/ >/dev/null
-	then (cd $TMPDIR; tar -xzf $1 core.info)
-	else (cd $TMPDIR; tar -xzf $CUR/$1 core.info)
+	if echo $1 | grep -q ^/
+	then (cd $TMPDIR; tar xzf $1 core.info)
+	else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
 	fi
 
 	PKG=`get_var PKG $TMPDIR/core.info`
 	DIR=`choose_dir $PKG $2`
 	mkdir -p $DIR
-	if echo $1 | grep ^/ >/dev/null
-	then (cd $DIR; tar -xzpf $1)
-	else (cd $DIR; tar -xzpf $CUR/$1)
+	if echo $1 | grep -q ^/
+	then (cd $DIR; tar xzpf $1)
+	else (cd $DIR; tar xzpf $CUR/$1)
 	fi
 }
 

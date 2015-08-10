@@ -1,5 +1,5 @@
 # CorePKG build script for sGOS.
-# Copyright 2011, 2012 David Egan Evans, Magna UT 84044 USA
+# Copyright 2011-2012, 2015 David Egan Evans <sinuhe@gnu.org>
 #
 # Permission to use, copy, modify, and distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -16,31 +16,27 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 PKG=corepkg
-VERSION=1.4
+VERSION=2
 
 if test ! -w .
-then
-	echo 'Cannot write to this directory!' 1>&2
-	exit 1
+then echo 'Cannot write to this directory!' 1>&2; exit 2
 fi
 
 if test -d /tmp/sGOS-$PKG/
-then rm -rf /tmp/sGOS-$PKG || exit 2
+then rm -rf /tmp/sGOS-$PKG || exit 3
 fi
 
 if test ! -f core.info
-then
-	echo "The core.info file is not present." 1>&2
-	exit 3
+then echo "The core.info file is not present." 1>&2; exit 4
 fi
 
 rm -rf $PKG-$VERSION
 tar xzvf $PKG-$VERSION.tar.gz
-cd $PKG-$VERSION || exit 1
+cd $PKG-$VERSION || exit 5
 
-mkdir -pm755 /tmp/sGOS-$PKG/bin
-mkdir -pm755 /tmp/sGOS-$PKG/usr/man/man8
-mkdir -pm755 /tmp/sGOS-$PKG/usr/share/$PKG
+mkdir -pm 755 /tmp/sGOS-$PKG/bin
+mkdir -pm 755 /tmp/sGOS-$PKG/usr/man/man8
+mkdir -pm 755 /tmp/sGOS-$PKG/usr/share/$PKG
 cp man/corepkg.8 /tmp/sGOS-$PKG/usr/man/man8/
 cp src/corepkg /tmp/sGOS-$PKG/bin/ && chmod a+x /tmp/sGOS-$PKG/bin/*
 cp COPYING /tmp/sGOS-$PKG/usr/share/$PKG
@@ -50,9 +46,8 @@ cp core.info /tmp/sGOS-$PKG/ && chmod 0644 /tmp/sGOS-$PKG/core.info
 chmod -R u+rw,go+r-w,ug-s /tmp/sGOS-$PKG
 find /tmp/sGOS-$PKG -type d -exec chmod ugo+x "{}" \;
 if test $(id -u) -ne 0
-then
-	echo "$PKG has been installed to /tmp/sGOS-$PKG/."
-	echo "It may be necessary to chown -R before packaging."
+then echo "$PKG has been installed to /tmp/sGOS-$PKG/." 1>&2
+	echo "It may be necessary to chown -R before packaging." 1>&2
 else
 	chown -R root: /tmp/sGOS-$PKG/
 	corepkg -c /tmp/sGOS-$PKG/

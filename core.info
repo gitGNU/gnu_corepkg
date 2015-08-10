@@ -2,20 +2,20 @@ PKG=corepkg$
 NAME=corepkg$
 DESC=core package [.cpk] handler$
 
-MAJOR=1.4$
+MAJOR=2$
 MINOR=1$
 
 SRC_URL=http://download.savannah.gnu.org/releases/corepkg/$
-SRC_DATE=22 June 2012$
+SRC_DATE=10 August 2015$
 
-BIN_URL=http://oberon07.com/hacking$
-BIN_DATE=22 June 2012$
+BIN_URL=http://nongnu.org/corepkg$
+BIN_DATE=10 August 2015$
 
 COMPILE=$
 DEPENDS=awk sh grep nroff sed tar$
 RELATED=$
 
-INSTALL=mkdir -m755 /etc/core$
-REMOVE=rmdir /etc/core$
+INSTALL=mkdir -m 755 /etc/core$
+REMOVE=$
 
 NOTES=$

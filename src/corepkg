@@ -147,7 +147,7 @@ remove_pkg() { # [pkg] [dir]
 	version=$(get_var MAJOR $TMPDIR/core.info)
 	release=$(get_var MINOR $TMPDIR/core.info)
 	cat $TMPDIR/core.info /tmp/rmfiles.$$ \
-		>$DIR/var/log/removed_pkgs/$1-$version+$relase-$(date +%F)
+		>$DIR/var/log/removed_pkgs/$1-$version+$release-$(date +%F)
 	rm $DIR/etc/core/$1.list
 
 	print_insrem $TMPDIR/core.info

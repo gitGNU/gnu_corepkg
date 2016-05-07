@@ -31,7 +31,7 @@ check_file() { # [file]
 
 check_dir() { # [dir]
 	if ! (test -d "$1")
-	then echo "Directory \"$1\" does not exist" 1>&2; return 2
+	then echo "Directory \"$1\" does not exist" 1>&2; return 3
 	fi
 
 	return 0
@@ -39,7 +39,7 @@ check_dir() { # [dir]
 
 check_pkg() { # [pkg] [dir]
 	if ! (test -f "$2/etc/core/$1.info")
-	then echo "Package \"$1\" is not installed" 1>&2; return 3
+	then echo "Package \"$1\" is not installed" 1>&2; return 4
 	fi
 
 	return 0
@@ -89,7 +89,7 @@ print_insrem() { # [core.info]
 
 install_pkg() { # [file] [dir]
 	if ! (check_file $1)
-	then return 4
+	then return 5
 	fi
 
 	CUR=$(pwd)
@@ -102,11 +102,11 @@ install_pkg() { # [file] [dir]
 
 	DIR=`choose_dir / $2`
 	if ! (check_dir $DIR)
-	then return 5
+	then return 6
 	fi
 
 	if check_pkg $PKG $DIR >/dev/null 2>/dev/null
-	then echo "Package \"$PKG\" is already installed" 1>&2; return 6
+	then echo "Package \"$PKG\" is already installed" 1>&2; return 7
 	fi
 
 	if echo $1 | grep -q ^/
@@ -124,11 +124,11 @@ install_pkg() { # [file] [dir]
 remove_pkg() { # [pkg] [dir]
 	DIR=$(choose_dir / $2)
 	if ! (check_dir $DIR)
-	then return 7
+	then return 8
 	fi
 
 	if ! (check_pkg "$1" $DIR)
-	then return 8
+	then return 9
 	fi
 
 	sort -u $DIR/etc/core/*.list >/tmp/allpkgs.$$
@@ -156,10 +156,7 @@ remove_pkg() { # [pkg] [dir]
 query_pkg() { # [file] | [pkg dir]
 	if echo $1 | grep -qF \\.cpk
 	then
-		if ! (check_file $1)
-		then return 9
-		fi
-
+		if ! (check_file $1); then return 10; fi
 		CUR=$(pwd)
 		if echo $1 | grep -q ^/
 		then (cd $TMPDIR; tar xzf $1 core.info)
@@ -171,11 +168,11 @@ query_pkg() { # [file] | [pkg dir]
 	else
 		DIR=`choose_dir / $2`
 		if ! (check_dir $DIR)
-		then return 10
+		then return 11
 		fi
 
 		if ! (check_pkg "$1" $DIR)
-		then return 11
+		then return 12
 		fi
 
 		INFO=$DIR/etc/core/$1.info
@@ -250,7 +247,7 @@ query_pkg() { # [file] | [pkg dir]
 list_pkg() { # [dir]
 	DIR=`choose_dir / $1`
 	if ! (check_dir $DIR)
-	then return 12
+	then return 13
 	fi
 
 	MAXLEN=1
@@ -272,7 +269,7 @@ list_pkg() { # [dir]
 create_pkg() { # [dir]
 	DIR=`choose_dir . $1`
 	if ! (check_dir $DIR)
-	then return 13
+	then return 14
 	fi
 
 	CUR=`pwd`
@@ -291,7 +288,7 @@ create_pkg() { # [dir]
 
 extract_pkg() { # [file] [dir]
 	if ! (check_file $1)
-	then return 14
+	then return 15
 	fi
 
 	CUR=$(pwd)
@@ -314,11 +311,11 @@ extract_pkg() { # [file] [dir]
 upgrade_pkg() {
 	DIR=$(choose_dir / $2)
 	if ! (check_dir $DIR)
-	then return 15
+	then return 16
 	fi
 
 	if ! (check_file $1)
-	then return 16
+	then return 17
 	fi
 
 	extract_pkg $1 $DIR

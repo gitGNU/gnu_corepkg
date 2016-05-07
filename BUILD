@@ -21,7 +21,7 @@
 
 DIST=sCore
 PKG=corepkg
-VERSION=2
+VERSION=3
 
 if test ! -w .
 then echo 'Cannot write to this directory!' 1>&2; exit 2

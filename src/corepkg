@@ -154,7 +154,7 @@ remove_pkg() { # [pkg] [dir]
 }
 
 query_pkg() { # [file] | [pkg dir]
-	if echo $1 | grep -qF .cpk
+	if echo $1 | grep -qF \\.cpk
 	then
 		if ! (check_file $1)
 		then return 9

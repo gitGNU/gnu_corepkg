@@ -2,14 +2,14 @@ PKG=corepkg$
 NAME=corepkg$
 DESC=core package [.cpk] handler$
 
-MAJOR=2$
+MAJOR=3$
 MINOR=1$
 
 SRC_URL=http://download.savannah.gnu.org/releases/corepkg/$
-SRC_DATE=10 August 2015$
+SRC_DATE=7 May 2016$
 
 BIN_URL=http://nongnu.org/corepkg$
-BIN_DATE=10 August 2015$
+BIN_DATE=7 May 2016$
 
 COMPILE=$
 DEPENDS=awk sh grep nroff sed tar$

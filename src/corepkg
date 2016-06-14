@@ -60,19 +60,19 @@ choose_dir() { # [default dir] [argument dir]
 }
 
 print_insrem() { # [core.info]
-	INSTALL=`get_var INSTALL $1`
-	REMOVE=`get_var REMOVE $1`
+	INSTALL="$(get_var INSTALL $1)"
+	REMOVE="$(get_var REMOVE $1)"
 
 	if ! (test "$INSTALL" || test "$REMOVE")
 	then return 0
 	fi
 
-	MAN=$TMPDIR/man
+	MAN="$TMPDIR/man"
 
 	echo '.TH "" "sCore" "CorePKG" (sCore) "CorePKG"' > $MAN
 
 	echo .SH PACKAGE >> $MAN
-	echo `get_var PKG $1` `get_var MAJOR $1`+`get_var MINOR $1` >> $MAN
+	echo $(get_var PKG $1) $(get_var MAJOR $1)+$(get_var MINOR $1) >> $MAN
 
 	if test "$INSTALL"
 	then echo .SH INSTALL INSTRUCTIONS >> $MAN
@@ -92,15 +92,15 @@ install_pkg() { # [file] [dir]
 	then return 5
 	fi
 
-	CUR=$(pwd)
+	CUR="$(pwd)"
 	if echo $1 | grep -q ^/
 	then (cd $TMPDIR; tar xzf $1 core.info)
 	else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
 	fi
 
-	PKG=`get_var PKG $TMPDIR/core.info`
+	PKG="$(get_var PKG $TMPDIR/core.info)"
 
-	DIR=`choose_dir / $2`
+	DIR="$(choose_dir / $2)"
 	if ! (check_dir $DIR)
 	then return 6
 	fi
@@ -122,7 +122,7 @@ install_pkg() { # [file] [dir]
 }
 
 remove_pkg() { # [pkg] [dir]
-	DIR=$(choose_dir / $2)
+	DIR="$(choose_dir / $2)"
 	if ! (check_dir $DIR)
 	then return 8
 	fi
@@ -144,10 +144,10 @@ remove_pkg() { # [pkg] [dir]
 	fi
 
 	mv $DIR/etc/core/$1.info $TMPDIR/core.info
-	version=$(get_var MAJOR $TMPDIR/core.info)
-	release=$(get_var MINOR $TMPDIR/core.info)
-	cat $TMPDIR/core.info /tmp/rmfiles.$$ \
-		>$DIR/var/log/removed_pkgs/$1-$version+$release-$(date +%F)
+	version="$(get_var MAJOR $TMPDIR/core.info)"
+	release="$(get_var MINOR $TMPDIR/core.info)"
+	cat "$TMPDIR"/core.info /tmp/rmfiles.$$ \
+		> "$DIR"/var/log/removed_pkgs/$1-$version+$release-$(date +%F)
 	rm $DIR/etc/core/$1.list
 
 	print_insrem $TMPDIR/core.info
@@ -157,7 +157,7 @@ query_pkg() { # [file] | [pkg dir]
 	if echo $1 | grep -qF \\.cpk
 	then
 		if ! (check_file $1); then return 10; fi
-		CUR=$(pwd)
+		CUR="$(pwd)"
 		if echo $1 | grep -q ^/
 		then (cd $TMPDIR; tar xzf $1 core.info)
 		else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
@@ -165,7 +165,7 @@ query_pkg() { # [file] | [pkg dir]
 
 		INFO=$TMPDIR/core.info
 	else
-		DIR=`choose_dir / $2`
+		DIR="$(choose_dir / $2)"
 		if ! (check_dir $DIR)
 		then return 11
 		fi
@@ -177,7 +177,7 @@ query_pkg() { # [file] | [pkg dir]
 		INFO=$DIR/etc/core/$1.info
 	fi
 
-	MAN=$TMPDIR/man
+	MAN="$TMPDIR/man"
 
 	echo '.TH "" "sCore" "CorePKG" (sCore) "CorePKG"' > $MAN
 
@@ -185,7 +185,7 @@ query_pkg() { # [file] | [pkg dir]
 	get_var NAME $INFO >> $MAN
 
 	echo .SH PACKAGE >> $MAN
-	echo `get_var PKG $INFO` `get_var MAJOR $INFO`+`get_var MINOR $INFO` >> $MAN
+	echo $(get_var PKG $INFO) $(get_var MAJOR $INFO)+$(get_var MINOR $INFO) >> $MAN
 
 	echo .SH DESCRIPTION >> $MAN
 	get_var DESC $INFO >> $MAN
@@ -204,37 +204,37 @@ query_pkg() { # [file] | [pkg dir]
 	echo .B Date: >> $MAN
 	get_var BIN_DATE $INFO >> $MAN
 
-	COMPILE=`get_var COMPILE $INFO`
+	COMPILE="$(get_var COMPILE $INFO)"
 	if test "$COMPILE"
 	then echo .SH COMPILED WITH >> $MAN
 		echo "$COMPILE" >> $MAN
 	fi
 
-	DEPENDS=`get_var DEPENDS $INFO`
+	DEPENDS="$(get_var DEPENDS $INFO)"
 	if test "$DEPENDS"
 	then echo .SH DEPENDENCIES >> $MAN
 		echo "$DEPENDS" >> $MAN
 	fi
 
-	RELATED=`get_var RELATED $INFO`
+	RELATED="$(get_var RELATED $INFO)"
 	if test "$RELATED"
 	then echo .SH RELATED PACKAGES >> $MAN
 		echo "$RELATED" >> $MAN
 	fi
 
-	INSTALL=`get_var INSTALL $INFO`
+	INSTALL="$(get_var INSTALL $INFO)"
 	if test "$INSTALL"
 	then echo .SH INSTALL INSTRUCTIONS >> $MAN
 		echo "$INSTALL" >> $MAN
 	fi
 
-	REMOVE=`get_var REMOVE $INFO`
+	REMOVE="$(get_var REMOVE $INFO)"
 	if test "$REMOVE"
 	then echo .SH REMOVE INSTRUCTIONS >> $MAN
 		echo "$REMOVE" >> $MAN
 	fi
 
-	NOTES=`get_var NOTES $INFO`
+	NOTES="$(get_var NOTES $INFO)"
 	if test "$NOTES"
 	then echo .SH NOTES >> $MAN
 		echo "$NOTES" >> $MAN
@@ -244,34 +244,34 @@ query_pkg() { # [file] | [pkg dir]
 }
 
 list_pkg() { # [dir]
-	DIR=`choose_dir / $1`
+	DIR="$(choose_dir / $1)"
 	if ! (check_dir $DIR)
 	then return 13
 	fi
 
 	MAXLEN=1
-	for i in `ls $DIR/etc/core/*.info`
-	do PKG=`get_var PKG $i`; LEN=`expr length $PKG`
-		if expr $LEN '>' $MAXLEN >/dev/null
+	for i in $(ls "$DIR"/etc/core/*.info)
+	do PKG="$(get_var PKG $i)"; LEN="$(expr length $PKG)"
+		if expr $LEN '>' $MAXLEN > /dev/null
 		then MAXLEN=$LEN
 		fi
 	done
 
-	for i in `ls $DIR/etc/core/*.info`
-	do PKG=`get_var PKG $i`
-		MAJOR=`get_var MAJOR $i`
-		MINOR=`get_var MINOR $i`
+	for i in $(ls "$DIR"/etc/core/*.info)
+	do PKG="$(get_var PKG $i)"
+		MAJOR="$(get_var MAJOR $i)"
+		MINOR="$(get_var MINOR $i)"
 		printf '%-'$MAXLEN's %s+%s\n' $PKG $MAJOR $MINOR
 	done
 }
 
 create_pkg() { # [dir]
-	DIR=`choose_dir . $1`
+	DIR="$(choose_dir . $1)"
 	if ! (check_dir $DIR)
 	then return 14
 	fi
 
-	CUR=`pwd`
+	CUR="$(pwd)"
 	cd $DIR
 
 	find ! -type d | sed -e '/core.info/d;/core.list/d' |\
@@ -279,7 +279,7 @@ create_pkg() { # [dir]
 
 	find . -exec touch -d "$(get_var BIN_DATE core.info)" {} \;
 
-	FILE=`get_var PKG core.info`-`get_var MAJOR core.info`+`get_var MINOR core.info`
+	FILE="$(get_var PKG core.info)-$(get_var MAJOR core.info)+$(get_var MINOR core.info)"
 	tar cf $CUR/$FILE.tar *
 	gzip $CUR/$FILE.tar
 	mv $CUR/$FILE.tar.gz $CUR/$FILE.cpk
@@ -290,15 +290,15 @@ extract_pkg() { # [file] [dir]
 	then return 15
 	fi
 
-	CUR=$(pwd)
+	CUR="$(pwd)"
 
 	if echo $1 | grep -q ^/
 	then (cd $TMPDIR; tar xzf $1 core.info)
 	else (cd $TMPDIR; tar xzf $CUR/$1 core.info)
 	fi
 
-	PKG=`get_var PKG $TMPDIR/core.info`
-	DIR=`choose_dir $PKG $2`
+	PKG="$(get_var PKG $TMPDIR/core.info)"
+	DIR="$(choose_dir $PKG $2)"
 	mkdir -p $DIR
 	if echo $1 | grep -q ^/
 	then (cd $DIR; tar xzpf $1)
@@ -308,7 +308,7 @@ extract_pkg() { # [file] [dir]
 
 # This does not allow a package of a different name to be upgraded.
 upgrade_pkg() {
-	DIR=$(choose_dir / $2)
+	DIR="$(choose_dir / $2)"
 	if ! (check_dir $DIR)
 	then return 16
 	fi
@@ -318,7 +318,7 @@ upgrade_pkg() {
 	fi
 
 	extract_pkg $1 $DIR
-	PKG=$(get_var PKG $DIR/core.info)
+	PKG="$(get_var PKG $DIR/core.info)"
 	sort -u $DIR/etc/core/$PKG.list > /tmp/oldpkg.$$
 	sort -u $DIR/core.list > /tmp/newpkg.$$
 	mv $DIR/core.info $DIR/etc/core/$PKG.info

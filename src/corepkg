@@ -1,7 +1,7 @@
 #!/bin/sh
 # corepkg - The Core GNU/Linux Distro package manager.
 # Copyright 2003 Josh Devan <jd@eknitek.net>
-# Copyright 2011-2012, 2014-2016 David Egan Evans <sinuhe@gnu.org>
+# Copyright 2011-2012, 2014-2017 David Egan Evans <sinuhe@gnu.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -154,7 +154,7 @@ remove_pkg() { # [pkg] [dir]
 }
 
 query_pkg() { # [file] | [pkg dir]
-	if echo $1 | grep -qF \\.cpk
+	if echo $1 | grep -qF \.cpk
 	then
 		if ! (check_file $1); then return 10; fi
 		CUR="$(pwd)"
